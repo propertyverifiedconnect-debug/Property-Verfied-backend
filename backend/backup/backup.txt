@@ -1,0 +1,106 @@
+Auth - API
+
+
+// const authorize = (roles = []) => {
+ 
+//   if (typeof roles === 'string') roles = [roles];
+
+//   return (req, res, next) => {
+//     const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+//     if (!token) return res.status(401).json({ error: 'Unauthorized' });
+
+//     try {
+//       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//       console.log( "decode status :" ,decoded)
+//       req.user = decoded;
+
+//       // if (roles.length && !roles.includes(decoded.role)) {
+//       //   return res.status(403).json({ error: 'Forbidden: Insufficient permissions' });
+//       // }
+
+//       next();
+//     } catch (err) {
+//       return res.status(401).json({ error: 'Invalid token' });
+//     }
+//   };
+// };
+
+
+
+// app.post('/api/signup', async (req, res) => {
+//   const { email, password, name , contact , city , role:role } = req.body;
+
+//    console.log(email , password, name , contact , city)
+//   // 1. Sign up user in Supabase Auth
+//   const { data, error } = await supabaseAdmin.auth.admin.createUser({
+//     email,
+//     password,
+//     email_confirm: true,
+  
+//   });
+
+//   if (error) return res.status(400).json({ error: error.message });
+
+//   const userId = data.user.id;
+
+//   // 2. Insert user in users table
+//   const { error: dbError } = await supabaseAdmin.from('users').insert([{ id: userId, email, name ,contact, city, role: role}]);
+//   if (dbError) return res.status(500).json({ error: dbError.message });
+
+
+//   const userRole = role ;
+//   // 3. Create JWT
+//   const token = jwt.sign({ id: userId, email , role: userRole }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+//   // 4. Send HTTP-only cookie
+//   res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'strict' });
+//   res.json({ message: 'User created', token });
+// });
+
+
+// app.post('/api/login', async (req, res) => {
+//   const { email, password } = req.body;
+
+//   const { data, error } = await supabaseAdmin.auth.signInWithPassword({ email, password });
+//   if (error) return res.status(400).json({ error: error.message });
+
+//   // Generate JWT
+//   const token = jwt.sign({ id: data.user.id, email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+//   res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'strict' });
+
+//   res.json({ message: 'Login successful', token });
+// });
+
+
+// app.get('/api/admin', authorize('admin'), (req, res) => {
+//   res.json({ message: 'Welcome Admin!' });
+// });
+
+
+// app.get('/api/partner', authorize('partner'), (req, res) => {
+//   res.json({ message: 'Welcome Partner!' });
+// });
+
+
+// app.get('/api/dashboard', authorize(['admin', 'user']), (req, res) => {
+//   res.json({ message: `Welcome ${req.user.role}` });
+// });
+
+
+
+
+// app.get('/api/profile', authorize(['admin', 'user', 'partner']), async (req, res) => {
+//   try {
+//     const { data, error } = await supabaseAdmin
+//       .from('users')
+//       .select('*')
+//       .eq('id', req.user.id)
+//       .single();
+
+//     if (error) return res.status(500).json({ error: error.message });
+//      console.log( "data revert :" ,data)
+//     res.json(data);
+//   } catch (err) {
+//     res.status(500).json({ error: 'Something went wrong' });
+//   }
+// });
