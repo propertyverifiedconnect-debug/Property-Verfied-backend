@@ -8,4 +8,7 @@ const getUserById = async (id) => {
   return await supabaseAdmin.from('users').select('*').eq('id', id).single();
 };
 
+
+
+
 module.exports = { createUserInDB, getUserById };
