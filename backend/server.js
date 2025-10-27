@@ -18,9 +18,13 @@ const partnerRoutes = require("./routes/propertyRoute")
 
 dotenv.config();
 const app = express();
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
-app.use(express.json());
+app.use(cors({ origin: [
+    'http://localhost:3000',
+    ' http://192.168.43.200:3000' // replace with your PC’s local IP
+  ], credentials: true }));
+
 app.use(cookieParser());
+app.use(express.json());
 app.use(
   helmet({
     contentSecurityPolicy: false,
@@ -52,4 +56,4 @@ app.use((err, req, res, next) => {
 
 
 
-app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));
+app.listen(process.env.PORT,() => console.log(`Server running on port ${process.env.PORT}`));

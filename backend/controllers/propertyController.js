@@ -71,8 +71,27 @@ exports.getAllProperties = async (req, res) => {
     if (error) throw error;
 
     res.status(200).json({
-      message: "✅ All properties fetched successfully",
+      message: "✅ ALL properties fetched successfully",
       count: data.length,
+      properties: data,
+    });
+  } catch (error) {
+    console.error("❌ Error fetching properties:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
+exports.getPropertybyID = async (req, res) => {
+  try {
+    const {id} = req.body
+    const { data, error } = await propertyService.getPropertybyIDService(id) // optional: newest first
+
+    if (error) throw error;
+
+    res.status(200).json({
+      message: "✅ properties fetched successfully",
       properties: data,
     });
   } catch (error) {

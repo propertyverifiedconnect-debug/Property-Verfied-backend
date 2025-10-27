@@ -50,9 +50,22 @@ const getAllPropertiesService = async () => {
 
 };
 
+
+
+const getPropertybyIDService = async (id) => {
+  return await supabaseAdmin.from('propertyapproval').select(`*, users (
+        id,
+        name,
+        email,
+        contact
+      )`).eq('id', id).single();
+
+};
+
 module.exports = {
   insertPropertyRow,
   updatePropertyPhotos,
   uploadBufferToStorage,
-  getAllPropertiesService
+  getAllPropertiesService,
+  getPropertybyIDService
 };
