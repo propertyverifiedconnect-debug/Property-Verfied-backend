@@ -1,5 +1,5 @@
 // controllers/userController.js
-const { getUserById } = require('../services/userService');
+const { getUserById, getAllApprovedPropertyService } = require('../services/userService');
 
 const getProfile = async (req, res) => {
   try {
@@ -16,4 +16,44 @@ const getDashboard = (req, res) => {
   res.json({ message: `Welcome ${req.user.role}` });
 };
 
-module.exports = { getProfile, getDashboard };
+
+const getAllApprovedProperty  = async (req, res) => {
+    try {
+      const { data, error } = await getAllApprovedPropertyService(); 
+    
+  
+      if (error) throw error;
+  
+      res.status(200).json({
+        message: "✅ ALL properties fetched successfully",
+        properties: data,
+      });
+    } catch (error) {
+      console.error("❌ Error fetching properties:", error);
+      res.status(500).json({ error: error.message });
+    }
+};
+
+
+
+ const getApprovedPropertybyID = async (req, res) => {
+  try {
+    const {id} = req.body
+    const { data, error } = await getAllApprovedPropertyService(id) // optional: newest first
+
+    if (error) throw error;
+
+    res.status(200).json({
+      message: "✅ properties fetched successfully",
+      properties: data,
+    });
+  } catch (error) {
+    console.error("❌ Error fetching properties:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
+
+module.exports = { getProfile, getDashboard , getAllApprovedProperty,getApprovedPropertybyID  };

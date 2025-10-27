@@ -8,7 +8,7 @@ exports.createProperty = async (req, res) => {
 
     console.log(body);  
 
-    // Create a payload for DB (exclude photos for now)
+   
     const payload = {
       user_id: user.id,
       looking_for: body.lookingFor || null,
@@ -93,6 +93,23 @@ exports.getPropertybyID = async (req, res) => {
     res.status(200).json({
       message: "✅ properties fetched successfully",
       properties: data,
+    });
+  } catch (error) {
+    console.error("❌ Error fetching properties:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+exports.setPropertytoApproval =  async (req, res) => {
+  try {
+    const {id} = req.body
+    const { data, error } = await propertyService.setPropertytoApprovalService(id) 
+
+    if (error) throw error;
+
+    res.status(200).json({
+      message: "✅ Property Approved  successfully",
     });
   } catch (error) {
     console.error("❌ Error fetching properties:", error);

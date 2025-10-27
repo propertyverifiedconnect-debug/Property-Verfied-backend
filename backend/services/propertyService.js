@@ -62,10 +62,54 @@ const getPropertybyIDService = async (id) => {
 
 };
 
+
+
+const setPropertytoApprovalService = async (id) => {
+  try {
+    
+    const { data: property, error: fetchError } = await supabaseAdmin
+      .from("propertyapproval")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (fetchError) throw fetchError;
+    if (!property) throw new Error("Property not found");
+
+    
+    const { error: insertError } = await supabaseAdmin
+      .from("approvedproperty")
+      .insert([property]);
+
+    if (insertError) throw insertError;
+
+   
+    const { error: deleteError } = await supabaseAdmin
+      .from("propertyapproval")
+      .delete()
+      .eq("id", id);
+
+    if (deleteError) throw deleteError;
+
+    return { success: true, message: "Property approved successfully" };
+  } catch (error) {
+    console.error("Error approving property:", error);
+    return { success: false, message: error.message };
+  }
+};
+
+
+
+
+
+
+
+
 module.exports = {
   insertPropertyRow,
   updatePropertyPhotos,
   uploadBufferToStorage,
   getAllPropertiesService,
-  getPropertybyIDService
+  getPropertybyIDService,
+  setPropertytoApprovalService
 };
