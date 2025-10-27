@@ -20,7 +20,7 @@ dotenv.config();
 const app = express();
 app.use(cors({ origin: [
     'http://localhost:3000',
-    ' http://192.168.43.200:3000' // replace with your PC’s local IP
+      process.env.CORS_URL // replace with your PC’s local IP
   ], credentials: true }));
 
 app.use(cookieParser());
