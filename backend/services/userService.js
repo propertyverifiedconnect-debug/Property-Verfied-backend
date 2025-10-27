@@ -20,8 +20,8 @@ const getAllApprovedPropertyService = async()=>{
       .order("created_at", { ascending: false }); 
 };
 
-const getApprovedPropertybyIDService = async() =>{
-  return await supabaseAdmin.from('propertyapproval').select(`*, users (
+const getApprovedPropertybyIDService = async(id) =>{
+  return await supabaseAdmin.from('approvedproperty').select(`*, users (
         id,
         name,
         email,

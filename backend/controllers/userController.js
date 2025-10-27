@@ -1,5 +1,5 @@
 // controllers/userController.js
-const { getUserById, getAllApprovedPropertyService } = require('../services/userService');
+const { getUserById, getAllApprovedPropertyService, getApprovedPropertybyIDService } = require('../services/userService');
 
 const getProfile = async (req, res) => {
   try {
@@ -38,8 +38,9 @@ const getAllApprovedProperty  = async (req, res) => {
 
  const getApprovedPropertybyID = async (req, res) => {
   try {
-    const {id} = req.body
-    const { data, error } = await getAllApprovedPropertyService(id) // optional: newest first
+    const { id } = req.body
+    console.log(id)
+    const { data, error } = await getApprovedPropertybyIDService(id) // optional: newest first
 
     if (error) throw error;
 
