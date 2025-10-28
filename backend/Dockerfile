@@ -12,8 +12,6 @@ FROM node:20-slim
 
 WORKDIR /usr/src/app
 
-RUN addgroup --system node && \
-    adduser --system --ingroup node node
 USER node
 
 COPY --from=build /usr/src/app/node_modules ./node_modules
