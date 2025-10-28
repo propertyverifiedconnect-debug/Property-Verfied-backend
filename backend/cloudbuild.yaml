@@ -29,7 +29,6 @@ steps:
         '--platform',
         'managed',
         '--allow-unauthenticated',
-        '--set-env-vars=SUPABASE_URL="https://flwdkuhwdegwwnqxwmvl.supabase.co", SUPABASE_SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsd2RrdWh3ZGVnd3ducXh3bXZsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MTM5OTI0NiwiZXhwIjoyMDc2OTc1MjQ2fQ.wpCGw0_iF9eCMNYhYC7cn_dfY6bQCgN-To4jHHxWA8k", JWT_SECRET="some_random_secret", PORT="5000", CORS_URL="http://localhost:8000"',
       ]
     id: 'Deploy to Cloud Run'
     waitFor: ['Push Image']
