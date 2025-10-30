@@ -1,5 +1,5 @@
 // controllers/userController.js
-const { getUserById, getAllApprovedPropertyService, getApprovedPropertybyIDService } = require('../services/userService');
+const { getUserById, getAllApprovedPropertyService, getApprovedPropertybyIDService, setApprovalBookingService, getBookingforApprovalService, getBookingforApprovalbyIDService, setBookingtoApprovalService, getApprovedBookingService } = require('../services/userService');
 
 const getProfile = async (req, res) => {
   try {
@@ -56,5 +56,114 @@ const getAllApprovedProperty  = async (req, res) => {
 
 
 
+ const setApprovalBooking = async (req, res) => {
+  try {
+    const { propertyid, visitType, date, timeSlot } = req.body;
+    const  user = req.user;
 
-module.exports = { getProfile, getDashboard , getAllApprovedProperty,getApprovedPropertybyID  };
+    console.log(propertyid, visitType, date, timeSlot ,user.id)
+   
+   
+    const { data, error } = await setApprovalBookingService( propertyid, visitType, date, timeSlot ,user.id) 
+
+    if (error) throw error;
+
+    res.status(200).json({
+      message: "✅ properties fetched successfully",
+    });
+  } catch (error) {
+    console.error("❌ Error fetching properties:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+ const getBookingforApproval = async (req, res) => {
+  try {
+    
+  
+   
+    const { data, error } = await getBookingforApprovalService()
+
+    if (error) throw error;
+
+    res.status(200).json({
+      message: "✅ properties fetched successfully",
+      booking :data
+    });
+  } catch (error) {
+    console.error("❌ Error fetching properties:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
+ const getBookingforApprovalbyID = async (req, res) => {
+  try {
+    
+   const {id} = req.body
+   
+    const { data, error } = await getBookingforApprovalbyIDService(id)
+
+    if (error) throw error;
+
+    res.status(200).json({
+      message: "✅ properties fetched successfully",
+      booking :data
+    });
+  } catch (error) {
+    console.error("❌ Error fetching properties:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
+ const setBookingtoApproval = async (req, res) => {
+  try {
+    
+   const {id} = req.body
+   
+    const { data, error } = await setBookingtoApprovalService(id)
+
+    if (error) throw error;
+
+    res.status(200).json({
+      message: "✅ properties fetched successfully",
+      booking :data
+    });
+  } catch (error) {
+    console.error("❌ Error fetching properties:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+ const getApprovedBooking = async (req, res) => {
+  try {
+    
+  
+   
+    const { data, error } = await getApprovedBookingService()
+
+    if (error) throw error;
+
+    res.status(200).json({
+      message: "✅ properties fetched successfully",
+      booking :data
+    });
+  } catch (error) {
+    console.error("❌ Error fetching properties:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
+
+module.exports = { getProfile, getDashboard ,
+   getAllApprovedProperty,getApprovedPropertybyID , 
+   setApprovalBooking , getBookingforApproval ,
+  getBookingforApprovalbyID,
+setBookingtoApproval , getApprovedBooking };
