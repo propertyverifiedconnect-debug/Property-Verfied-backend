@@ -42,7 +42,7 @@ const login = async (req, res) => {
     if (error) return res.status(400).json({ error: error.message });
 
     const token = generateToken({ id: data.user.id, email });
-    res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'strict' });
+    res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none' });
 
     res.json({ message: 'Login successful', token });
   } catch (err) {
