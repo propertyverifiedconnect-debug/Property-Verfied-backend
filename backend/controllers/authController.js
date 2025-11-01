@@ -52,7 +52,7 @@ const login = async (req, res) => {
 
   const logOut =  (req, res) => {
   try {
-    // 🔹 Clear the HttpOnly token cookie
+    
     res.clearCookie("token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production", // only secure in production

@@ -19,10 +19,11 @@ const partnerRoutes = require("./routes/propertyRoute")
 dotenv.config();
 const app = express();
 app.use(cors({
-   origin: [
-    'http://localhost:3000',
-      process.env.CORS_URL // replace with your PC’s local IP
-  ],
+  //  origin: [
+  //   'http://localhost:3000',
+  //     process.env.CORS_URL // replace with your PC’s local IP
+  // ],
+  origin: true, 
    credentials: true ,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
