@@ -25,7 +25,7 @@ const signup = async (req, res) => {
     if (dbError) return res.status(500).json({ error: dbError.message });
 
     const token = generateToken({ id: userId, email, role });
-    res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'strict' });
+    res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none' });
 
     res.json({ message: 'User created successfully', token });
   } catch (err) {
@@ -38,27 +38,15 @@ const login = async (req, res) => {
     const { email, password } = req.body;
 
     const { data, error } = await loginUser(email, password);
-    console.log("Supabase Login Call () ")
-    
+     console.log("Supabase Login Call () ")
     if (error) return res.status(400).json({ error: error.message });
 
     const token = generateToken({ id: data.user.id, email });
-    
-    // Detect if request is from localhost
-    const origin = req.headers.origin || req.headers.referer;
-    const isLocalhost = origin && (origin.includes('localhost') || origin.includes('127.0.0.1'));
-    
-    res.cookie('token', token, { 
-      httpOnly: true, 
-      secure: !isLocalhost,  // false for localhost, true for production
-      sameSite: isLocalhost ? 'lax' : 'none',  // 'lax' for localhost, 'none' for cross-origin
-      path: '/',
-      maxAge: 24 * 60 * 60 * 1000
-    });
+    res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none', path: '/',  maxAge: 24 * 60 * 60 * 1000 });
 
     res.json({ message: 'Login successful', token });
   } catch (err) {
-    res.status(500).json({ error: `Login failed ${err}` });
+    res.status(500).json({ error: `Login failed ${err} ` });
   }
 };
 
@@ -68,8 +56,8 @@ const login = async (req, res) => {
     res.clearCookie("token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production", // only secure in production
-      sameSite: "strict",
-      path: "/", // important: must match the path where it was set
+      sameSite: "none",
+      path: "/", // important:must match the path where it was set
     });
 
     return res.status(200).json({ message: "✅ Logged out successfully!" });
