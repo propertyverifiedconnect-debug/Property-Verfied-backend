@@ -18,10 +18,15 @@ const partnerRoutes = require("./routes/propertyRoute")
 
 dotenv.config();
 const app = express();
-app.use(cors({ origin: [
+app.use(cors({
+   origin: [
     'http://localhost:3000',
       process.env.CORS_URL // replace with your PC’s local IP
-  ], credentials: true }));
+  ],
+   credentials: true ,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }));
 
 app.use(cookieParser());
 app.use(express.json());
@@ -54,6 +59,4 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal Server Error' });
 });
 
-const port = process.env.PORT || 8080;
-
-app.listen(port,() => console.log(`Server running on port ${process.env.PORT}`));
+app.listen(process.env.PORT, "0.0.0.0",() => console.log(`Server running on port ${process.env.PORT}`));

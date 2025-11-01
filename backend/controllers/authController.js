@@ -25,7 +25,7 @@ const signup = async (req, res) => {
     if (dbError) return res.status(500).json({ error: dbError.message });
 
     const token = generateToken({ id: userId, email, role });
-    res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'strict' });
+    res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none' });
 
     res.json({ message: 'User created successfully', token });
   } catch (err) {
@@ -42,7 +42,7 @@ const login = async (req, res) => {
     if (error) return res.status(400).json({ error: error.message });
 
     const token = generateToken({ id: data.user.id, email });
-    res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'strict' });
+    res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none', path: '/',  maxAge: 24 * 60 * 60 * 1000 });
 
     res.json({ message: 'Login successful', token });
   } catch (err) {
@@ -50,4 +50,22 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { signup, login };
+  const logOut =  (req, res) => {
+  try {
+    // 🔹 Clear the HttpOnly token cookie
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // only secure in production
+      sameSite: "none",
+      path: "/", // important:must match the path where it was set
+    });
+
+    return res.status(200).json({ message: "✅ Logged out successfully!" });
+  } catch (error) {
+    console.error("❌ Logout error:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+
+module.exports = { signup, login ,logOut };
