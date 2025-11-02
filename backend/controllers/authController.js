@@ -1,7 +1,8 @@
 // controllers/authController.js
-const { signupUser, loginUser } = require('../services/authService');
+const { signupUser, loginUser, checkUser } = require('../services/authService');
 const { createUserInDB } = require('../services/userService');
 const { generateToken } = require('../services/jwtService');
+
 
 const signup = async (req, res) => {
   try {
@@ -33,19 +34,49 @@ const signup = async (req, res) => {
   }
 };
 
+// const login = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     const { data, error } = await loginUser(email, password);
+//      console.log("Supabase Login Call () ")
+//     if (error) return res.status(400).json({ error: error.message });
+
+//     const token = generateToken({ id: data.user.id, email });
+//     res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none', path: '/',  maxAge: 24 * 60 * 60 * 1000 });
+
+//     res.json({ message: 'Login successful', token });
+//   } catch (err) {
+//     res.status(500).json({ error: `Login failed ${err} ` });
+//   }
+// };
+
+
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password ,role } = req.body;
+    
+   
 
-    const { data, error } = await loginUser(email, password);
-     console.log("Supabase Login Call () ")
-    if (error) return res.status(400).json({ error: error.message });
+      const { data, error } = await loginUser(email, password);
+       console.log("Supabase Login Call () ")
 
-    const token = generateToken({ id: data.user.id, email });
-    res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none', path: '/',  maxAge: 24 * 60 * 60 * 1000 });
+      if (error) return res.status(400).json({ error: error.message });
 
-    res.json({ message: 'Login successful', token });
-  } catch (err) {
+      const userId = data.user.id
+
+     const { role: roleFromDB } = await checkUser(userId);
+    console.log("DB role:", roleFromDB);
+          
+
+       if (roleFromDB !== role) {
+      return res.status(403).json({ error: 'Invalid role for this account' });
+    }
+      const token = generateToken({ id: data.user.id, email });
+      res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none', path: '/',  maxAge: 24 * 60 * 60 * 1000 });
+      res.json({ message: 'Login successful', token });
+    }
+     catch (err) {
     res.status(500).json({ error: `Login failed ${err} ` });
   }
 };

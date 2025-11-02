@@ -12,5 +12,18 @@ const { supabaseAdmin } = require('../config/supabaseClient');
   return await supabaseAdmin.auth.signInWithPassword({ email, password });
 };
 
+const checkUser = async (userid) => {
+  const { data, error } = await supabaseAdmin
+    .from('users')
+    .select('role')
+    .eq('id', userid)
+    .single();
 
-module.exports = { signupUser, loginUser }
+  if (error || !data) {
+    throw new Error('User not found or unable to fetch role');
+  }
+  return data;
+};
+
+
+module.exports = { signupUser, loginUser , checkUser}
