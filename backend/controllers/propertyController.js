@@ -14,6 +14,7 @@ exports.createProperty = async (req, res) => {
       looking_for: body.lookingFor || null,
       property_kind: body.propertyKind || null,
       property_type: body.propertyType || null,
+       property_name: body.propertyName || null,
       contact: body.contact || null,
       city: body.city || null,
       location: body.location || null,

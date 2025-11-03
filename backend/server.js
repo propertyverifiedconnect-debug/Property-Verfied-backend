@@ -13,6 +13,7 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const partnerRoutes = require("./routes/propertyRoute")
+const referRoutes = require("./routes/referRoutes")
 
 
 
@@ -45,6 +46,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/partner', partnerRoutes);
+app.use('/api/refer', referRoutes);
 
 
 
