@@ -1,6 +1,6 @@
 // controllers/authController.js
 
-const { partnerIDprojectNameService, referIntoDBService, getCustomerleadService, setCustomerleadtoApprovalService } = require("../services/referService");
+const { partnerIDprojectNameService, referIntoDBService, getCustomerleadService, setCustomerleadtoApprovalService, getAllApprovedLeadService } = require("../services/referService");
 
 
 
@@ -72,6 +72,21 @@ const referIntoDB = async (req, res) => {
 };
 
 
+ const getAllApprovedLead = async (req, res) => {
+  try { 
+    const { data, error } = await getAllApprovedLeadService()
+
+    if (error) throw error;
+
+    res.status(200).json({
+      message: "✅ properties fetched successfully",
+      customer_leads :data
+    });
+  } catch (error) {
+    console.error("❌ Error fetching properties:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
 
 
-module.exports = { referIntoDB ,getAllLeadtoApproved ,setCustomerleadtoApproval };
+module.exports = { referIntoDB ,getAllLeadtoApproved ,setCustomerleadtoApproval ,getAllApprovedLead };

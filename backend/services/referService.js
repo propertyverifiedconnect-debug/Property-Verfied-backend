@@ -46,5 +46,12 @@ const referIntoDBService = async (
 
 
 
+ const getAllApprovedLeadService = async () => {
+  return await supabaseAdmin.from('customer_leads').select("*,user_id(name)").eq("status","approved").order('created_at', { ascending: false });
+};
 
-module.exports = { partnerIDprojectNameService , referIntoDBService , getCustomerleadService ,setCustomerleadtoApprovalService }
+
+
+
+module.exports = { partnerIDprojectNameService , referIntoDBService 
+  , getCustomerleadService ,setCustomerleadtoApprovalService ,getAllApprovedLeadService }
