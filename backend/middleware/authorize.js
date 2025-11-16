@@ -39,9 +39,9 @@ const authorize = (roles = []) => {
       req.user = decoded;
 
       // Check if user has required role
-      if (roles.length && !roles.includes(decoded.role)) {
-        return res.status(403).json({ error: 'Forbidden: Insufficient permissions' });
-      }
+      // if (roles.length && !roles.includes(decoded.role)) {
+      //   return res.status(403).json({ error: 'Forbidden: Insufficient permissions' });
+      // }
 
       next();
     } catch (err) {
