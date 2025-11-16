@@ -7,6 +7,7 @@ const { generateToken } = require('../services/jwtService');
 const signup = async (req, res) => {
   try {
     const { email, password, name, contact, city, role } = req.body;
+    const isProduction = process.env.NODE_ENV === "production";
 
     const { data, error } = await signupUser(email, password);
     if (error) return res.status(400).json({ error: error.message });
@@ -26,7 +27,15 @@ const signup = async (req, res) => {
     if (dbError) return res.status(500).json({ error: dbError.message });
 
     const token = generateToken({ id: userId, email, role });
-    res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none' });
+     const cookieName = `token_${role}`;  
+    
+    res.cookie(cookieName, token, {
+  httpOnly: true,
+  secure: isProduction,   
+  sameSite: isProduction ? "none" : "lax",
+  path: "/",
+  maxAge: 24 * 60 * 60 * 1000
+  });
 
     res.json({ message: 'User created successfully', token });
   } catch (err) {
@@ -93,11 +102,16 @@ const login = async (req, res) => {
   }
 };
 
-  const logOut =  (req, res) => {
+  const logOut = async (req, res) => {
   try {
-   
-    const isProduction = process.env.NODE_ENV === "production";
-    res.clearCookie("token", {
+     const user = req.user.id
+     const isProduction = process.env.NODE_ENV === "production";
+     console.log(user)
+     const mode = await checkUser(user)
+
+    console.log("Logout mode - " , mode.role)
+
+    res.clearCookie(`token_${mode.role}`, {
       httpOnly: true,
       secure: isProduction, // only secure in production
       sameSite: isProduction ? "none" : "lax",
