@@ -55,9 +55,10 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password ,role } = req.body;
+    const isProduction = process.env.NODE_ENV === "production";
     
    
-
+      console.log (" which Envorment : ", process.env.NODE_ENV)
       const { data, error } = await loginUser(email, password);
        console.log("Supabase Login Call () ")
 
@@ -66,14 +67,23 @@ const login = async (req, res) => {
       const userId = data.user.id
 
      const { role: roleFromDB } = await checkUser(userId);
-    console.log("DB role:", roleFromDB);
+      console.log("DB role:", roleFromDB);
           
 
        if (roleFromDB !== role) {
       return res.status(403).json({ error: 'Invalid role for this account' });
     }
       const token = generateToken({ id: data.user.id, email });
-      res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none', path: '/',  maxAge: 24 * 60 * 60 * 1000 });
+    
+  res.cookie("token", token, {
+  httpOnly: true,
+  secure: isProduction,   
+  sameSite: isProduction ? "none" : "lax",
+  path: "/",
+  maxAge: 24 * 60 * 60 * 1000
+  });
+     
+     
       res.json({ message: 'Login successful', token });
     }
      catch (err) {
@@ -83,11 +93,12 @@ const login = async (req, res) => {
 
   const logOut =  (req, res) => {
   try {
-    
+   
+    const isProduction = process.env.NODE_ENV === "production";
     res.clearCookie("token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // only secure in production
-      sameSite: "none",
+      secure: isProduction, // only secure in production
+      sameSite: isProduction ? "none" : "lax",
       path: "/", // important:must match the path where it was set
     });
 
