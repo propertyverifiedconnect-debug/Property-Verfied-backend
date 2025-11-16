@@ -74,8 +74,10 @@ const login = async (req, res) => {
       return res.status(403).json({ error: 'Invalid role for this account' });
     }
       const token = generateToken({ id: data.user.id, email });
-    
-  res.cookie("token", token, {
+      const cookieName = `token_${role}`;  
+  
+  
+      res.cookie(cookieName, token, {
   httpOnly: true,
   secure: isProduction,   
   sameSite: isProduction ? "none" : "lax",
