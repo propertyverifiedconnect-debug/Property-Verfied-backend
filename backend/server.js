@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken');
 const { supabaseAdmin } = require('./config/supabaseClient');
 const morgun = require("morgan")
 const helmet= require('helmet')
+const {GeminiCall}  = require("./services/geminiService")
+
 
 
 const authRoutes = require('./routes/authRoutes');
@@ -14,6 +16,7 @@ const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const partnerRoutes = require("./routes/propertyRoute")
 const referRoutes = require("./routes/referRoutes")
+const aiRoutes  = require("./routes/aiRoute")
 
 
 
@@ -47,6 +50,18 @@ app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/partner', partnerRoutes);
 app.use('/api/refer', referRoutes);
+app.use('/api/ai', aiRoutes);
+
+
+
+
+// Test on startup
+
+
+
+// GeminiCall("Hello Gemini  , can you tell me the meaning of Muchkund ")
+//   .then(response => console.log("✅ Gemini Response:", response))
+//   .catch(error => console.error("❌ Failed to call Gemini:", error.message));
 
 
 
