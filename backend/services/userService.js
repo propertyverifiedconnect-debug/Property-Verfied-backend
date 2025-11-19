@@ -146,9 +146,30 @@ const getApprovedBookingService = async (id) => {
 }
 
 
+const getUserOrderService = async (id) =>{
+  return supabaseAdmin.from('bookings').select(` *, approved_property_id (
+        id,
+        location,
+        city,
+        property_type,
+        price,
+        property_name,
+        photos,
+        user_id (
+          id,
+          name,
+          email,
+          contact
+        )
+      )
+    `).eq("user_id" ,id)
+}
+
+
 module.exports = { createUserInDB, getUserById 
 ,getAllApprovedPropertyService ,getApprovedPropertybyIDService,
 setApprovalBookingService ,getBookingforApprovalService,
 getBookingforApprovalbyIDService ,setBookingtoApprovalService ,
-getApprovedBookingService
+getApprovedBookingService ,
+getUserOrderService
 };

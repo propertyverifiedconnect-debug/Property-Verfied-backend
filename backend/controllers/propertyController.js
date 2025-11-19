@@ -32,6 +32,11 @@ exports.createProperty = async (req, res) => {
       social_media: body.socialMedia || null,
       price: body.price ? parseFloat(body.price) : null,
       description: body.description || null,
+       capacity:body.capacity ||null,
+     alreadyrent: body.alreadyrent||null,
+  profession:body.profession||null ,
+  Lifestyle:body.Lifestyle || null,
+  Apartmentsize:body.Apartmentsize || null,
       photos: null,
     };
 

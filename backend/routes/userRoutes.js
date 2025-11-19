@@ -1,5 +1,5 @@
 const express = require('express');
-const { getProfile, getDashboard, getAllApprovedProperty, getApprovedPropertybyID, setApprovalBooking, getBookingforApproval, getBookingforApprovalbyID, setBookingtoApproval, getApprovedBooking } = require('../controllers/userController');
+const { getProfile, getDashboard, getAllApprovedProperty, getApprovedPropertybyID, setApprovalBooking, getBookingforApproval, getBookingforApprovalbyID, setBookingtoApproval, getApprovedBooking, getUserOrder } = require('../controllers/userController');
 const authorize  = require('../middleware/authorize');
 
 
@@ -14,5 +14,6 @@ router.get('/getBookingforApproval' , getBookingforApproval);
 router.post('/getBookingforApprovalbyID' , getBookingforApprovalbyID);
 router.post('/setBookingtoApproval' , setBookingtoApproval);
 router.get('/getApprovedBooking' , getApprovedBooking);
+router.get('/getUserOrder' ,authorize(['user']) ,  getUserOrder);
 
 module.exports = router;

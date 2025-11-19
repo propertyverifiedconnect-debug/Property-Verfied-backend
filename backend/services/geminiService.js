@@ -1,4 +1,5 @@
 const { GoogleGenerativeAI } =  require("@google/generative-ai")
+const { supabaseAdmin } = require('../config/supabaseClient');
 
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -40,7 +41,28 @@ async function GeminiCall(prompt) {
       }
       
       `
-  }else{
+  }if(mode =="category"){
+
+
+    return `
+        your the Budget analyiser for the for the Property whcih porperty kind of property should buy 
+        so the user answer some question-> 
+       ${question.map((item, index) => {
+          return `
+          Question: ${item}
+          Answer: ${answer[index]}`;
+        }).join('\n') // Joins the array into a single string
+      }
+     as the   Budget analyiser analyses the budget using answer return output in json as follows 
+      {
+       safe_purchase_limit : analyis the Safe Purchase Limit the limit in the lowernumber-uppernumber limit lakh format ,
+       emi_capacity : give the emi capacity for the per month,
+       risk:risk level (high , low , mid),
+       recommandation : why to buy this kind of budget with satatisics and make it short of 2-3 lines only   
+      }`
+
+  }
+  else{
     return `new mode : ${mode}`
   }
 
@@ -67,6 +89,41 @@ const cleanAndParseJSON = (aiResponseString) => {
   }
 };
 
-module.exports = { GeminiCall ,Getprompt , cleanAndParseJSON }
+const getRentServices = async (answer) => {
+  const city = answer[0].toLowerCase();
+  const room = answer[1] == "Shared room" ? "Shared": "Private";
+  const budget = answer[2];
+  const profession = answer[3];
+
+  console.log(
+city,
+ room,
+ profession,
+ budget
+  )
+
+  const { data, error } = await supabaseAdmin
+    .from("approvedproperty")
+    .select("*")
+    .eq('city', city)
+    .eq('roomtype', room)
+    .eq('profession', profession)          // Rent <= budget
+     // Sort by cheapest first
+
+  if (error) {
+    console.error('Supabase query error:', error);
+    throw new Error(error.message);
+  }
+
+  // ✅ Return empty array if no results
+  return data || [];
+};
+
+
+
+
+
+
+module.exports = { GeminiCall ,Getprompt , cleanAndParseJSON ,getRentServices }
 
 

@@ -1,5 +1,5 @@
 // controllers/userController.js
-const { getUserById, getAllApprovedPropertyService, getApprovedPropertybyIDService, setApprovalBookingService, getBookingforApprovalService, getBookingforApprovalbyIDService, setBookingtoApprovalService, getApprovedBookingService } = require('../services/userService');
+const { getUserById, getAllApprovedPropertyService, getApprovedPropertybyIDService, setApprovalBookingService, getBookingforApprovalService, getBookingforApprovalbyIDService, setBookingtoApprovalService, getApprovedBookingService, getUserOrderService } = require('../services/userService');
 
 const getProfile = async (req, res) => {
   try {
@@ -161,9 +161,30 @@ const getAllApprovedProperty  = async (req, res) => {
 
 
 
+ const getUserOrder = async (req, res) => {
+  try {
+    
+   const user  = req.user.id
+   
+    const { data, error } = await getUserOrderService(user)
+
+    if (error) throw error;
+
+    res.status(200).json({
+      message: "✅order fetched successfully",
+      booking :data
+    });
+  } catch (error) {
+    console.error("❌ Error fetching properties:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
 
 module.exports = { getProfile, getDashboard ,
    getAllApprovedProperty,getApprovedPropertybyID , 
    setApprovalBooking , getBookingforApproval ,
   getBookingforApprovalbyID,
-setBookingtoApproval , getApprovedBooking };
+setBookingtoApproval , getApprovedBooking ,getUserOrder };
