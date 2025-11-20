@@ -10,18 +10,18 @@ const getUserById = async (id) => {
 
 const getAllApprovedPropertyService = async()=>{
   return await supabaseAdmin
-      .from("approvedproperty")
+      .from("propertyapproval")
       .select(`*, users (
         id,
         name,
         email,
         contact
-      )`)
+      )`).eq("status","adminApproved")
       .order("created_at", { ascending: false }); 
 };
 
 const getApprovedPropertybyIDService = async(id) =>{
-  return await supabaseAdmin.from('approvedproperty').select(`*, users (
+  return await supabaseAdmin.from('propertyapproval').select(`*, users (
         id,
         name,
         email,
@@ -34,7 +34,7 @@ const setApprovalBookingService = async(propertyid, visitType, date, timeSlot ,u
   return await supabaseAdmin
       .from('bookings')
       .insert({
-        approved_property_id: propertyid,
+        property_approved: propertyid,
         user_id: userid,
         visit_type: visitType,
         visit_date: date,
@@ -51,7 +51,7 @@ const getBookingforApprovalService = async () => {
     .from('bookings')
     .select(`
       *,
-      approved_property_id (
+      property_approved(
         id,
         location,
         city,
@@ -73,6 +73,7 @@ const getBookingforApprovalService = async () => {
     `)
     .eq('status', 'pending')
     .order('created_at', { ascending: false });
+
 }
 
 
@@ -81,7 +82,7 @@ const getBookingforApprovalbyIDService = async (id) => {
     .from('bookings')
     .select(`
       *,
-      approved_property_id (
+      property_approved(
         id,
         location,
         city,
@@ -121,7 +122,7 @@ const getApprovedBookingService = async (id) => {
     .from('bookings')
     .select(`
       *,
-      approved_property_id (
+       property_approved(
         id,
         location,
         city,
@@ -147,7 +148,7 @@ const getApprovedBookingService = async (id) => {
 
 
 const getUserOrderService = async (id) =>{
-  return supabaseAdmin.from('bookings').select(` *, approved_property_id (
+  return supabaseAdmin.from('bookings').select(` *, property_approved(
         id,
         location,
         city,

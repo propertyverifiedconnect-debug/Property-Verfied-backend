@@ -63,6 +63,19 @@ async function GeminiCall(prompt) {
       }
        donot give the Explanation of Choices only json response       `
 
+  }else if(mode =="discuss")
+  {
+    return `
+      Your are the Property Verified Assitants who you give the answer about the any property related question
+      if the question is related to property then its ok but if its not then , said that can you get back to the topic 
+      and answer the question in the json format only json
+      the question of the user is 
+      question :${answer}
+      {
+       answer: give the answer of  the question ;
+      }
+      
+    `
   }
   else{
     return `new mode : ${mode}`
@@ -106,7 +119,7 @@ city,
 
   const { data, error } = await supabaseAdmin
     .from("approvedproperty")
-    .select("*")
+    .select("* ,user_id(name)").eq("looking_for","Rent / Lease")
     .eq('city', city)
     .eq('roomtype', room)
     .eq('profession', profession)          // Rent <= budget

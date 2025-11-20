@@ -17,12 +17,19 @@ const PropertyVerifiedAi = async (req, res) => {
 
       const cleanResponse = cleanAndParseJSON(Geminiresponse);
       res.json({ message: "User created successfully", cleanResponse });
+
     } else if (mode == "rent") {
-      const data = await getRentServices(answers);
-      console.log(data);
-      res.json({ message: "Rent match successfully" });
+
+      const cleanResponse = await getRentServices(answers);
+    
+      res.json({ message: "Rent match successfully", cleanResponse });
 
     }else if (mode == "category") {
+      const prompt = Getprompt(mode, answers, questions);
+      const Geminiresponse = await GeminiCall(prompt);    
+      const cleanResponse = cleanAndParseJSON(Geminiresponse);
+      res.json({ message: "Rent match successfully" , cleanResponse });
+    }else if (mode == "discuss") {
       const prompt = Getprompt(mode, answers, questions);
       const Geminiresponse = await GeminiCall(prompt);    
       const cleanResponse = cleanAndParseJSON(Geminiresponse);

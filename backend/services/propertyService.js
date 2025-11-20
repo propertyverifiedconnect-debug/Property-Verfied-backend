@@ -45,7 +45,7 @@ const getAllPropertiesService = async () => {
         name,
         email,
         contact
-      )`)
+      )`).eq("status" ,"pending")
       .order("created_at", { ascending: false }); 
 
 };
@@ -69,7 +69,7 @@ const setPropertytoApprovalService = async (id) => {
     
     const { data: property, error: fetchError } = await supabaseAdmin
       .from("propertyapproval")
-      .select("*")
+      .update({status: "adminApproved"})
       .eq("id", id)
       .single();
 
@@ -77,17 +77,17 @@ const setPropertytoApprovalService = async (id) => {
     if (!property) throw new Error("Property not found");
 
     
-    const { error: insertError } = await supabaseAdmin
-      .from("approvedproperty")
-      .insert([property]);
+    // const { error: insertError } = await supabaseAdmin
+    //   .from("approvedproperty")
+    //   .insert([property]);
 
-    if (insertError) throw insertError;
+    // if (insertError) throw insertError;
 
    
-    const { error: deleteError } = await supabaseAdmin
-      .from("propertyapproval")
-      .delete()
-      .eq("id", id);
+    // const { error: deleteError } = await supabaseAdmin
+    //   .from("propertyapproval")
+    //   .delete()
+    //   .eq("id", id);
 
     if (deleteError) throw deleteError;
 
