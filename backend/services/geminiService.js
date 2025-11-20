@@ -45,7 +45,8 @@ async function GeminiCall(prompt) {
 
 
     return `
-        your the Budget analyiser for the for the Property whcih porperty kind of property should buy 
+        your the People's Category Choice analyiser for the for the Property , which take the question and find the best suitable envoirnemt
+        depend on there profession in his particular area of his city    
         so the user answer some question-> 
        ${question.map((item, index) => {
           return `
@@ -53,13 +54,14 @@ async function GeminiCall(prompt) {
           Answer: ${answer[index]}`;
         }).join('\n') // Joins the array into a single string
       }
-     as the   Budget analyiser analyses the budget using answer return output in json as follows 
+     as the People's Category Choice analyiser the question and find the best suitable spot in that are using answer return output in json as follows 
       {
-       safe_purchase_limit : analyis the Safe Purchase Limit the limit in the lowernumber-uppernumber limit lakh format ,
-       emi_capacity : give the emi capacity for the per month,
-       risk:risk level (high , low , mid),
-       recommandation : why to buy this kind of budget with satatisics and make it short of 2-3 lines only   
-      }`
+       best_match :best_match according to his profession what is best for him to be a part of , means if he is a  IT Professionals then the best match is Young IT Professionals Hub  ,
+       recommandation : why this is the best match  and make it short of 2-3 lines only  , 
+       area : Which are of the city his perfect for him it will be the array , 
+       people : Or any people in that particular who belongs to same profession or the diffrent but can help you and give there personal info like name , profession and area and the image link
+      }
+       donot give the Explanation of Choices only json response       `
 
   }
   else{
