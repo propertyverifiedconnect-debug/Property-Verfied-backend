@@ -5,20 +5,22 @@ const authorize = (roles = []) => {
   
   return (req, res, next) => {
     let token = null;
-    
+    let foundRole = null;
+ 
     // Try to find token from role-specific cookies
     if (roles.length > 0) {
       for (const role of roles) {
         const cookieName = `token_${role}`;
         if (req.cookies[cookieName]) {
           token = req.cookies[cookieName];
+          foundRole = role;
+          console.log(`Found token in cookie: ${cookieName}`);
           break;
         }
       }
-    } else {
-      token = req.cookies.token;
     }
-    
+
+
     // Fallback to Authorization header
     if (!token && req.headers.authorization) {
       token = req.headers.authorization.split(' ')[1];
@@ -29,6 +31,7 @@ const authorize = (roles = []) => {
     }
 
     try {
+
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       
       // Add more debugging
@@ -38,10 +41,13 @@ const authorize = (roles = []) => {
       
       req.user = decoded;
 
-      // Check if user has required role (currently commented out)
-      // if (roles.length && !roles.includes(decoded.role)) {
-      //   return res.status(403).json({ error: 'Forbidden: Insufficient permissions' });
-      // }
+      if (roles.length > 0 && !roles.includes(decoded.role)) {
+        return res.status(403).json({ 
+          error: 'Forbidden: Insufficient permissions',
+          userRole: decoded.role,
+          requiredRoles: roles
+        });
+      }
 
       next();
     } catch (err) {

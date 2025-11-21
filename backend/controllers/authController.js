@@ -82,11 +82,17 @@ const login = async (req, res) => {
        if (roleFromDB !== role) {
       return res.status(403).json({ error: 'Invalid role for this account' });
     }
-      const token = generateToken({ id: data.user.id, email });
+      const token = generateToken({ id: data.user.id, email , role: roleFromDB });
       const cookieName = `token_${role}`;  
   
+       ['admin', 'user', 'partner'].forEach(r => {
+      if (r !== roleFromDB) {
+        res.clearCookie(`token_${r}`, { path: '/' });
+      }
+    });
+
   
-      res.cookie(cookieName, token, {
+  res.cookie(cookieName, token, {
   httpOnly: true,
   secure: isProduction,   
   sameSite: isProduction ? "none" : "lax",
