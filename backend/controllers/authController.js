@@ -87,7 +87,10 @@ const login = async (req, res) => {
   
        ['admin', 'user', 'partner'].forEach(r => {
       if (r !== roleFromDB) {
-        res.clearCookie(`token_${r}`, { path: '/' });
+        res.clearCookie(`token_${r}`, {  httpOnly: true,
+  secure: isProduction,   
+  sameSite: isProduction ? "none" : "lax",
+  path: "/", });
       }
     });
 
