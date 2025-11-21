@@ -1,3 +1,5 @@
+const { json } = require("express");
+const { getFlagvalueService } = require("../services/adminService");
 const propertyService = require("../services/propertyService");
 
 exports.createProperty = async (req, res) => {
@@ -5,8 +7,13 @@ exports.createProperty = async (req, res) => {
     const user = req.user; // from authMiddleware
     // Form fields come in req.body (all strings) and files in req.files
     const body = req.body;
-
+    const flag = await getFlagvalueService()
+    if(!flag)
+    {
+      return res.json({message:"flag missing"})
+    }
     console.log(body);  
+    
 
    
     const payload = {
@@ -32,12 +39,13 @@ exports.createProperty = async (req, res) => {
       social_media: body.socialMedia || null,
       price: body.price ? parseFloat(body.price) : null,
       description: body.description || null,
-       capacity:body.capacity ||null,
-     alreadyrent: body.alreadyrent||null,
-  profession:body.profession||null ,
-  Lifestyle:body.Lifestyle || null,
-  Apartmentsize:body.Apartmentsize || null,
+      capacity:body.capacity ||null,
+      alreadyrent: body.alreadyrent||null,
+      profession:body.profession||null ,
+      Lifestyle:body.Lifestyle || null,
+      Apartmentsize:body.Apartmentsize || null,
       photos: null,
+      status:flag.data.value == "auto" ? "adminApproved": "pending"
     };
 
     // Insert row first to get property id

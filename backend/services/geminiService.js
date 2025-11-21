@@ -118,7 +118,7 @@ city,
   )
 
   const { data, error } = await supabaseAdmin
-    .from("approvedproperty")
+    .from("propertyapproval")
     .select("* ,user_id(name)").eq("looking_for","Rent / Lease")
     .eq('city', city)
     .eq('roomtype', room)

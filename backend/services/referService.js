@@ -1,7 +1,7 @@
 const { supabaseAdmin } = require('../config/supabaseClient');
 
  const partnerIDprojectNameService = async (projectName) => {
-  return await supabaseAdmin.from('approvedproperty').select("user_id").eq('property_name',projectName).single()
+  return await supabaseAdmin.from('propertyapproval').select("user_id").eq('property_name',projectName).single()
 };
 
 const referIntoDBService = async (
@@ -12,7 +12,8 @@ const referIntoDBService = async (
   projectName,
   notes,
   referralName,
-  partner_id
+  partner_id,
+  flag
 ) => {
       return await supabaseAdmin
     .from('customer_leads') // ✅ make sure this matches your actual table name
@@ -26,6 +27,7 @@ const referIntoDBService = async (
         notes: notes,
         referral_name: referralName,
         user_id: partner_id, 
+        status:flag == "auto" ? "approved": "pending"
       },
     ]);
 

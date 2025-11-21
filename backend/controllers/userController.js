@@ -1,4 +1,5 @@
 // controllers/userController.js
+const { getFlagvalueService } = require('../services/adminService');
 const { getUserById, getAllApprovedPropertyService, getApprovedPropertybyIDService, setApprovalBookingService, getBookingforApprovalService, getBookingforApprovalbyIDService, setBookingtoApprovalService, getApprovedBookingService, getUserOrderService } = require('../services/userService');
 
 const getProfile = async (req, res) => {
@@ -60,11 +61,12 @@ const getAllApprovedProperty  = async (req, res) => {
   try {
     const { propertyid, visitType, date, timeSlot } = req.body;
     const  user = req.user;
+    const flag = await getFlagvalueService()
 
-    console.log(propertyid, visitType, date, timeSlot ,user.id)
+    console.log(propertyid, visitType, date, timeSlot ,user.id ,)
    
    
-    const { data, error } = await setApprovalBookingService( propertyid, visitType, date, timeSlot ,user.id) 
+    const { data, error } = await setApprovalBookingService( propertyid, visitType, date, timeSlot ,user.id ,flag.data.value) 
 
     if (error) throw error;
 

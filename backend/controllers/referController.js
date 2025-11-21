@@ -1,6 +1,8 @@
 // controllers/authController.js
 
+const { getFlagvalueService } = require("../services/adminService");
 const { partnerIDprojectNameService, referIntoDBService, getCustomerleadService, setCustomerleadtoApprovalService, getAllApprovedLeadService } = require("../services/referService");
+const { getFlagValue } = require("./adminController");
 
 
 
@@ -14,16 +16,20 @@ const referIntoDB = async (req, res) => {
     notes,
     referralName} = req.body;
 
-   const {data , error} = await partnerIDprojectNameService(projectName)
 
-   console.log(data);
+   const {data , error} = await partnerIDprojectNameService(projectName)
+   const  flag = await getFlagvalueService();
+   
     const {stage , stageerror} = await referIntoDBService( customerName,
     contactNumber,
     profession,
     budgetRange,
     projectName,
     notes,
-    referralName, data.user_id)
+    referralName, 
+    data.user_id,
+    flag.data.value
+  )
 
     
    console.log(error ,"new error", stageerror)
