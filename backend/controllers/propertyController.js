@@ -1,16 +1,17 @@
 const { json } = require("express");
-const { getFlagvalueService } = require("../services/adminService");
+const { getFlagvalueService, checkSuspiciousPartnerService } = require("../services/adminService");
 const propertyService = require("../services/propertyService");
 
 exports.createProperty = async (req, res) => {
   try {
     const user = req.user; // from authMiddleware
     // Form fields come in req.body (all strings) and files in req.files
-    const body = req.body;
-    const flag = await getFlagvalueService()
-    if(!flag)
+
+    const suspected = await checkSuspiciousPartnerService(user.id)
+    console.log("Supected Found" , suspected.data)
+    if(!flag || !suspected)
     {
-      return res.json({message:"flag missing"})
+      return res.json({message:"flag || suspect missing missing"})
     }
     console.log(body);  
     
@@ -45,7 +46,7 @@ exports.createProperty = async (req, res) => {
       Lifestyle:body.Lifestyle || null,
       Apartmentsize:body.Apartmentsize || null,
       photos: null,
-      status:flag.data.value == "auto" ? "adminApproved": "pending"
+      status: suspected.data.suspect == false  ? "adminApproved": "pending"
     };
 
     // Insert row first to get property id

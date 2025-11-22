@@ -1,5 +1,5 @@
 // controllers/userController.js
-const { getFlagvalueService } = require('../services/adminService');
+const { getFlagvalueService, checkSuspiciousPartnerService } = require('../services/adminService');
 const { getUserById, getAllApprovedPropertyService, getApprovedPropertybyIDService, setApprovalBookingService, getBookingforApprovalService, getBookingforApprovalbyIDService, setBookingtoApprovalService, getApprovedBookingService, getUserOrderService } = require('../services/userService');
 
 const getProfile = async (req, res) => {
@@ -59,14 +59,19 @@ const getAllApprovedProperty  = async (req, res) => {
 
  const setApprovalBooking = async (req, res) => {
   try {
-    const { propertyid, visitType, date, timeSlot } = req.body;
+    const { propertyid, visitType, date, timeSlot ,partnerId } = req.body;
     const  user = req.user;
-    const flag = await getFlagvalueService()
+    const suspected = await checkSuspiciousPartnerService(partnerId)
 
-    console.log(propertyid, visitType, date, timeSlot ,user.id ,)
+    console.log(propertyid, visitType, date, timeSlot ,user.id ,partnerId)
+
+    if(!partnerId)
+    {
+       return res.json({message:" partner id missing"})
+    }
    
    
-    const { data, error } = await setApprovalBookingService( propertyid, visitType, date, timeSlot ,user.id ,flag.data.value) 
+    const { data, error } = await setApprovalBookingService( propertyid, visitType, date, timeSlot ,user.id ,suspected.data.suspect) 
 
     if (error) throw error;
 
