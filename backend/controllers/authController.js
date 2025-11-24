@@ -99,7 +99,8 @@ const login = async (req, res) => {
           httpOnly: true,
           secure: isProduction,
           sameSite: isProduction ? "none" : "lax",
-          path: "/"
+          path: "/",
+          domain: ".property-verified-frontend.vercel.app"
         });
       }
     });
