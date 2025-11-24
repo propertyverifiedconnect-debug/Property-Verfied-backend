@@ -111,7 +111,8 @@ const login = async (req, res) => {
       secure: isProduction,
       sameSite: isProduction ? "none" : "lax",
       path: "/",
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+     domain: ".property-verified-frontend.vercel.app"
     });
     
     console.log(`Set cookie: ${cookieName}`);
