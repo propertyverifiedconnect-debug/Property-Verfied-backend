@@ -63,87 +63,83 @@ const signup = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { email, password ,role } = req.body;
+    const { email, password, role } = req.body;
     const isProduction = process.env.NODE_ENV === "production";
-
-
-     const origin = req.headers.origin;
-     let cookieDomain;
-     if (origin.includes('https://property-verfied-frontend.vercel.app') || origin.includes('http://localhost:3000')  ) {
-    cookieDomain = 'https://property-verfied-frontend.vercel.app';
-  } else if (origin.includes('https://property-verfied-partner.vercel.app/') || origin.includes('http://localhost:3001') ) {
-    cookieDomain = 'https://property-verfied-partner.vercel.app/';
-  } else if (origin.includes('https://property-verified-admin.vercel.app/') || origin.includes('http://localhost:3002')) {
-    cookieDomain = 'https://property-verified-admin.vercel.app/';
-  }
     
-   
-      console.log (" which Envorment : ", process.env.NODE_ENV)
-      const { data, error } = await loginUser(email, password);
-       console.log("Supabase Login Call () ")
+    console.log("Which Environment:", process.env.NODE_ENV);
+    
+    const { data, error } = await loginUser(email, password);
+    console.log("Supabase Login Call()");
 
-      if (error) return res.status(400).json({ error: error.message });
+    if (error) return res.status(400).json({ error: error.message });
 
-      const userId = data.user.id
-
-     const { role: roleFromDB } = await checkUser(userId);
-      console.log("DB role:", roleFromDB);
-          
-
-       if (roleFromDB !== role) {
+    const userId = data.user.id;
+    const { role: roleFromDB } = await checkUser(userId);
+    console.log("DB role:", roleFromDB);
+    
+    // Verify role matches
+    if (roleFromDB !== role) {
       return res.status(403).json({ error: 'Invalid role for this account' });
     }
-      const token = generateToken({ id: data.user.id, email , role: roleFromDB });
-      // const cookieName = `token_${role}`;  
-  
-  //      ['admin', 'user', 'partner'].forEach(r => {
-  //     if (r !== roleFromDB) {
-  //       res.clearCookie(`token_${r}`, {  httpOnly: true,
-  // secure: isProduction,   
-  // sameSite: isProduction ? "none" : "lax",
-  // path: "/", });
-  //     }
-  //   });
 
-  
-  res.cookie("access_token", token, {
-   domain: cookieDomain,
-  httpOnly: true,
-  secure: isProduction,   
-  sameSite: isProduction ? "none" : "lax",
-  path: "/",
-  maxAge: 24 * 60 * 60 * 1000
-  });
-     
-     
-      res.json({ message: 'Login successful', token });
-    }
-     catch (err) {
-    res.status(500).json({ error: `Login failed ${err} ` });
+    // Generate token with role
+    const token = generateToken({ 
+      id: data.user.id, 
+      email, 
+      role: roleFromDB 
+    });
+
+    // Define cookie name based on role
+    const cookieName = `token_${roleFromDB}`;
+    
+    // Clear cookies for OTHER roles to prevent overlap
+    ['admin', 'user', 'partner'].forEach(r => {
+      if (r !== roleFromDB) {
+        res.clearCookie(`token_${r}`, {
+          httpOnly: true,
+          secure: isProduction,
+          sameSite: isProduction ? "none" : "lax",
+          path: "/"
+        });
+      }
+    });
+
+    // Set the role-specific cookie
+    res.cookie(cookieName, token, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      path: "/",
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    });
+    
+    console.log(`Set cookie: ${cookieName}`);
+    
+    res.json({ 
+      message: 'Login successful', 
+      token,
+      role: roleFromDB 
+    });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ error: `Login failed: ${err.message}` });
   }
 };
 
-  const logOut = async (req, res) => {
-  try {
-     const user = req.user.id
-     const isProduction = process.env.NODE_ENV === "production";
-     console.log(user)
-     const mode = await checkUser(user)
-
-    console.log("Logout mode - " , mode.role)
-
-    res.clearCookie(`token_${mode.role}`, {
+ const logOut = (req, res) => {
+  const isProduction = process.env.NODE_ENV === "production";
+  
+  // Clear all role-specific cookies
+  ['admin', 'user', 'partner'].forEach(role => {
+    res.clearCookie(`token_${role}`, {
       httpOnly: true,
-      secure: isProduction, // only secure in production
+      secure: isProduction,
       sameSite: isProduction ? "none" : "lax",
-      path: "/", // important:must match the path where it was set
+      path: "/"
     });
-
-    return res.status(200).json({ message: "✅ Logged out successfully!" });
-  } catch (error) {
-    console.error("❌ Logout error:", error);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
+  });
+  
+  res.json({ message: 'Logged out successfully' });
 };
 
 
