@@ -6,14 +6,15 @@ exports.createProperty = async (req, res) => {
   try {
     const user = req.user; // from authMiddleware
     // Form fields come in req.body (all strings) and files in req.files
+      const body =req.body;
 
     const suspected = await checkSuspiciousPartnerService(user.id)
     console.log("Supected Found" , suspected.data)
-    if(!flag || !suspected)
+    if( !suspected)
     {
       return res.json({message:"flag || suspect missing missing"})
     }
-    console.log(body);  
+    
     
 
    

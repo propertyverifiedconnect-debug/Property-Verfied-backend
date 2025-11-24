@@ -65,6 +65,17 @@ const login = async (req, res) => {
   try {
     const { email, password ,role } = req.body;
     const isProduction = process.env.NODE_ENV === "production";
+
+
+     const origin = req.headers.origin;
+     let cookieDomain;
+     if (origin.includes('https://property-verfied-frontend.vercel.app') || origin.includes('http://localhost:3000')  ) {
+    cookieDomain = 'https://property-verfied-frontend.vercel.app';
+  } else if (origin.includes('https://property-verfied-partner.vercel.app/') || origin.includes('http://localhost:3001') ) {
+    cookieDomain = 'https://property-verfied-partner.vercel.app/';
+  } else if (origin.includes('https://property-verified-admin.vercel.app/') || origin.includes('http://localhost:3002')) {
+    cookieDomain = 'https://property-verified-admin.vercel.app/';
+  }
     
    
       console.log (" which Envorment : ", process.env.NODE_ENV)
@@ -83,19 +94,20 @@ const login = async (req, res) => {
       return res.status(403).json({ error: 'Invalid role for this account' });
     }
       const token = generateToken({ id: data.user.id, email , role: roleFromDB });
-      const cookieName = `token_${role}`;  
+      // const cookieName = `token_${role}`;  
   
-       ['admin', 'user', 'partner'].forEach(r => {
-      if (r !== roleFromDB) {
-        res.clearCookie(`token_${r}`, {  httpOnly: true,
-  secure: isProduction,   
-  sameSite: isProduction ? "none" : "lax",
-  path: "/", });
-      }
-    });
+  //      ['admin', 'user', 'partner'].forEach(r => {
+  //     if (r !== roleFromDB) {
+  //       res.clearCookie(`token_${r}`, {  httpOnly: true,
+  // secure: isProduction,   
+  // sameSite: isProduction ? "none" : "lax",
+  // path: "/", });
+  //     }
+  //   });
 
   
-  res.cookie(cookieName, token, {
+  res.cookie("access_token", token, {
+   domain: cookieDomain,
   httpOnly: true,
   secure: isProduction,   
   sameSite: isProduction ? "none" : "lax",

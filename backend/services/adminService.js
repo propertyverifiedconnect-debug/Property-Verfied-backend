@@ -11,7 +11,7 @@ const getALLpartnerService= async() =>{
 } 
 
 const  getALLSuspiciousPartnerService= async() =>{
-  return await supabaseAdmin.from("users").select("*").eq("suspect","TRUE")
+  return await supabaseAdmin.from("users").select("*").eq("suspect","TRUE").eq("role","partner")
 } 
 
 const markSuspiciousPartnerService= async(partnerid) =>{

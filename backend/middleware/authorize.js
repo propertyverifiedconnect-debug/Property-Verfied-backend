@@ -8,17 +8,20 @@ const authorize = (roles = []) => {
     let foundRole = null;
  
     // Try to find token from role-specific cookies
-    if (roles.length > 0) {
-      for (const role of roles) {
-        const cookieName = `token_${role}`;
-        if (req.cookies[cookieName]) {
-          token = req.cookies[cookieName];
-          foundRole = role;
-          console.log(`Found token in cookie: ${cookieName}`);
-          break;
-        }
-      }
-    }
+    // if (roles.length > 0) {
+    //   for (const role of roles) {
+    //     const cookieName = `token_${role}`;
+    //     if (req.cookies[cookieName]) {
+    //       token = req.cookies[cookieName];
+    //       foundRole = role;
+    //       console.log(`Found token in cookie: ${cookieName}`);
+    //       break;
+    //     }
+    //   }
+    // }
+
+
+    token = req.cookies["access_token"]
 
 
     // Fallback to Authorization header
