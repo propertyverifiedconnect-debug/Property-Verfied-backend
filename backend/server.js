@@ -22,16 +22,35 @@ const aiRoutes  = require("./routes/aiRoute")
 
 dotenv.config();
 const app = express();
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001', 
+  process.env.FRONTEND_URL,
+  "https://property-verfied-frontend.vercel.app/",
+  "https://property-verfied-partner.vercel.app/",
+  "https://property-verified-admin.vercel.app/",
+];
+
 app.use(cors({
-  //  origin: [
-  //   'http://localhost:3000',
-  //     process.env.CORS_URL // replace with your PC’s local IP
-  // ],
-  origin: true, 
-   credentials: true ,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  }));
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('❌ Blocked by CORS:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // CRITICAL for cookies!
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Set-Cookie'], // Allow Set-Cookie header
+}));
+
+
 
 app.use(cookieParser());
 app.use(express.json());
