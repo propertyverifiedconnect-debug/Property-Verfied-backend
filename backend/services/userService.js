@@ -56,7 +56,7 @@ const getBookingforApprovalService = async () => {
         location,
         city,
         property_type,
-        property_name
+        property_name,
         price,
         photos,
         user_id (
@@ -124,7 +124,7 @@ const getApprovedBookingService = async (id) => {
     .from('bookings')
     .select(`
       *,
-       property_approved(
+       property_approved!inner(
         id,
         location,
         city,
