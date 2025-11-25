@@ -27,10 +27,20 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001', 
   process.env.FRONTEND_URL,
-  "https://property-verfied-frontend.vercel.app/",
-  "https://property-verfied-partner.vercel.app/",
-  "https://property-verified-admin.vercel.app/",
+  "https://property-verfied-frontend.vercel.app",
+  "https://property-verfied-partner.vercel.app",
+  "https://property-verified-admin.vercel.app",
 ];
+
+
+
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false,
+  })
+);
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -46,20 +56,18 @@ app.use(cors({
   },
   credentials: true, // CRITICAL for cookies!
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   exposedHeaders: ['Set-Cookie'], // Allow Set-Cookie header
+   preflightContinue: false,
+  optionsSuccessStatus: 204
 }));
 
+app.options('*', cors());
 
 
 app.use(cookieParser());
 app.use(express.json());
-app.use(
-  helmet({
-    contentSecurityPolicy: false,
-    crossOriginEmbedderPolicy: false,
-  })
-);
+
 app.use(morgun("dev"));
 
 
