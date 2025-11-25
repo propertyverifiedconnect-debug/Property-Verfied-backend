@@ -13,7 +13,7 @@ router.post('/setApprovalBooking', authorize(['admin', 'user',  'partner']) , se
 router.get('/getBookingforApproval' , getBookingforApproval);
 router.post('/getBookingforApprovalbyID' , getBookingforApprovalbyID);
 router.post('/setBookingtoApproval' , setBookingtoApproval);
-router.get('/getApprovedBooking' , getApprovedBooking);
+router.get('/getApprovedBooking',authorize(['admin', 'user',  'partner']) , getApprovedBooking);
 router.get('/getUserOrder' ,authorize(['user']) ,  getUserOrder);
 
 module.exports = router;

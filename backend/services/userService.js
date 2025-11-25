@@ -56,6 +56,7 @@ const getBookingforApprovalService = async () => {
         location,
         city,
         property_type,
+        property_name
         price,
         photos,
         user_id (
@@ -87,6 +88,7 @@ const getBookingforApprovalbyIDService = async (id) => {
         location,
         city,
         property_type,
+          property_name,
         price,
         photos,
         user_id (
@@ -127,6 +129,7 @@ const getApprovedBookingService = async (id) => {
         location,
         city,
         property_type,
+           property_name,
         price,
         photos,
         user_id (
@@ -141,8 +144,7 @@ const getApprovedBookingService = async (id) => {
         email,
         contact
       )
-    `)
-    .eq('status', 'approved')
+    `).eq("property_approved.user_id",id)
     .order('created_at', { ascending: false });
 }
 

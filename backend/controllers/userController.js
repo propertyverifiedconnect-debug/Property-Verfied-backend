@@ -20,6 +20,7 @@ const getDashboard = (req, res) => {
 
 const getAllApprovedProperty  = async (req, res) => {
     try {
+      
       const { data, error } = await getAllApprovedPropertyService(); 
     
   
@@ -149,10 +150,8 @@ const getAllApprovedProperty  = async (req, res) => {
 
  const getApprovedBooking = async (req, res) => {
   try {
-    
-  
-   
-    const { data, error } = await getApprovedBookingService()
+   const partnerId = req.user.id
+    const { data, error } = await getApprovedBookingService(partnerId)
 
     if (error) throw error;
 
