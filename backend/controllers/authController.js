@@ -114,14 +114,6 @@ const login = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
    
     });
-
-     res.cookie(`client_${cookieName}`, token, {
-      httpOnly: false,  // ✅ JavaScript CAN access this
-      secure: isProduction,
-      sameSite: isProduction ? "none" : "lax",
-      path: "/",
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    });
     
     console.log(`Set cookie: ${cookieName}`);
     
@@ -143,15 +135,6 @@ const login = async (req, res) => {
   ['admin', 'user', 'partner'].forEach(role => {
     res.clearCookie(`token_${role}`, {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? "none" : "lax",
-      path: "/"
-    });
-  });
-
-    ['admin', 'user', 'partner'].forEach(role => {
-    res.clearCookie(`client_token_${role}`, {
-      httpOnly: false,
       secure: isProduction,
       sameSite: isProduction ? "none" : "lax",
       path: "/"
