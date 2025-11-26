@@ -11,6 +11,8 @@ router.post('/insertPropertyinDB', authorize(['partner']) ,upload.array("photos"
 router.get("/getAllProperties" , propertyController.getAllProperties);
 router.post("/getPropertiesbyID"  , propertyController.getPropertybyID);
 router.post("/setPropertytoApproval"  , propertyController.setPropertytoApproval);
+router.get("/setAllPartnerProperty" ,authorize(["partner"])  , propertyController.setAllPartnerProperty);
+
 
 
 

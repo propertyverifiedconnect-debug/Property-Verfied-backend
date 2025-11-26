@@ -100,6 +100,10 @@ const setPropertytoApprovalService = async (id) => {
 
 
 
+const setAllPartnerPropertyService = async (id) => {
+   return await supabaseAdmin.from('propertyapproval').select(`*`).eq('user_id', id);
+};
+
 
 
 
@@ -111,5 +115,6 @@ module.exports = {
   uploadBufferToStorage,
   getAllPropertiesService,
   getPropertybyIDService,
-  setPropertytoApprovalService
+  setPropertytoApprovalService,
+  setAllPartnerPropertyService
 };
