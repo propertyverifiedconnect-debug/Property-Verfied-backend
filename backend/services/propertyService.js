@@ -104,7 +104,13 @@ const setAllPartnerPropertyService = async (id) => {
    return await supabaseAdmin.from('propertyapproval').select(`*`).eq('user_id', id);
 };
 
+const setBookingtoContactService= async (id) => {
+   return await supabaseAdmin.from('bookings').update({status : "contact"}).eq('id', id);
+};
 
+const setBookingtoPurchaseService= async (id) => {
+   return await supabaseAdmin.from('bookings').update({status : "purchase"}).eq('id', id);
+};
 
 
 
@@ -116,5 +122,7 @@ module.exports = {
   getAllPropertiesService,
   getPropertybyIDService,
   setPropertytoApprovalService,
-  setAllPartnerPropertyService
+  setAllPartnerPropertyService,
+  setBookingtoContactService,
+  setBookingtoPurchaseService
 };

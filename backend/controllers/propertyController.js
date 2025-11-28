@@ -46,6 +46,7 @@ exports.createProperty = async (req, res) => {
       profession:body.profession||null ,
       Lifestyle:body.Lifestyle || null,
       Apartmentsize:body.Apartmentsize || null,
+      Options : body.Options || null,
       photos: null,
       status: suspected.data.suspect == false  ? "adminApproved": "pending"
     };
@@ -132,6 +133,40 @@ exports.setPropertytoApproval =  async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+exports.setBookingtoContact =  async (req, res) => {
+  try {
+    const {propertyId} = req.body
+    const { data, error } = await propertyService.setBookingtoContactService(propertyId) 
+
+    if (error) throw error;
+
+    res.status(200).json({
+      message: "✅ Property Approved  successfully",
+    });
+  } catch (error) {
+    console.error("❌ Error fetching properties:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.setBookingtoPurchase =  async (req, res) => {
+  try {
+    const {propertyId} = req.body
+    const { data, error } = await propertyService.setBookingtoPurchaseService(propertyId) 
+
+    if (error) throw error;
+
+    res.status(200).json({
+      message: "✅ Property Approved  successfully",
+    });
+  } catch (error) {
+    console.error("❌ Error fetching properties:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 
 
 exports.setAllPartnerProperty =  async (req, res) => {

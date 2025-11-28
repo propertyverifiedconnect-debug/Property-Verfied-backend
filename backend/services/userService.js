@@ -89,6 +89,7 @@ const getBookingforApprovalbyIDService = async (id) => {
         city,
         property_type,
           property_name,
+          status,
         price,
         photos,
         user_id (
