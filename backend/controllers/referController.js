@@ -1,6 +1,6 @@
 // controllers/authController.js
 
-const { getFlagvalueService } = require("../services/adminService");
+const { getFlagvalueService, checkSuspiciousPartnerService } = require("../services/adminService");
 const { partnerIDprojectNameService, referIntoDBService, getCustomerleadService, setCustomerleadtoApprovalService, getAllApprovedLeadService } = require("../services/referService");
 const { getFlagValue } = require("./adminController");
 
@@ -18,8 +18,9 @@ const referIntoDB = async (req, res) => {
 
 
    const {data , error} = await partnerIDprojectNameService(projectName)
-   const  flag = await getFlagvalueService();
-   
+   console.log(  "partner id - ", data.user_id)
+   const  flag = await checkSuspiciousPartnerService(data.user_id)
+    console.log("flag - ",flag)
     const {stage , stageerror} = await referIntoDBService( customerName,
     contactNumber,
     profession,
@@ -28,7 +29,7 @@ const referIntoDB = async (req, res) => {
     notes,
     referralName, 
     data.user_id,
-    flag.data.value
+    flag.data.suspect
   )
 
     
@@ -79,8 +80,12 @@ const referIntoDB = async (req, res) => {
 
 
  const getAllApprovedLead = async (req, res) => {
+   
   try { 
-    const { data, error } = await getAllApprovedLeadService()
+
+    const user = req.user.id
+    console.log( " partner id with get - ", user)
+    const { data, error } = await getAllApprovedLeadService(user)
 
     if (error) throw error;
 

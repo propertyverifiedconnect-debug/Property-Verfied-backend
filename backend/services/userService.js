@@ -84,19 +84,7 @@ const getBookingforApprovalbyIDService = async (id) => {
     .select(`
       *,
       property_approved(
-        id,
-        location,
-        city,
-        property_type,
-          property_name,
-          status,
-        price,
-        photos,
-        user_id (
-          id,
-          name,
-          email
-        )
+      *,user_id(*)
       ),
       user_id (
         id,

@@ -27,7 +27,7 @@ const referIntoDBService = async (
         notes: notes,
         referral_name: referralName,
         user_id: partner_id, 
-        status:flag == "auto" ? "approved": "pending"
+        status:flag == false ? "approved": "pending"
       },
     ]);
 
@@ -48,8 +48,8 @@ const referIntoDBService = async (
 
 
 
- const getAllApprovedLeadService = async () => {
-  return await supabaseAdmin.from('customer_leads').select("*,user_id(name)").eq("status","approved").order('created_at', { ascending: false });
+ const getAllApprovedLeadService = async (id) => {
+  return await supabaseAdmin.from('customer_leads').select("*,user_id(name)").eq("status","approved").order('created_at', { ascending: false }).eq("user_id",id);
 };
 
 
