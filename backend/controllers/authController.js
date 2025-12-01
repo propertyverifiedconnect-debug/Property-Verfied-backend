@@ -1,5 +1,5 @@
 // controllers/authController.js
-const { signupUser, loginUser, checkUser } = require('../services/authService');
+const { signupUser, loginUser, checkUser, requestPasswordReset, updatePassword } = require('../services/authService');
 const { createUserInDB } = require('../services/userService');
 const { generateToken } = require('../services/jwtService');
 
@@ -133,7 +133,7 @@ const login = async (req, res) => {
   
   // Clear all role-specific cookies
   ['admin', 'user', 'partner'].forEach(role => {
-    res.clearCookie(`token_${role}`, {
+    res.clzearCookie(`token_${role}`, {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? "none" : "lax",
@@ -144,5 +144,62 @@ const login = async (req, res) => {
   res.json({ message: 'Logged out successfully' });
 };
 
+const handleRequestResetRoute = async (req, res) => {
+  const { email } = req.body
 
-module.exports = { signup, login ,logOut };
+  if (!email) {
+    return res.status(400).json({
+      success: false,
+      error: 'Email is required'
+    })
+  }
+
+  const result = await requestPasswordReset(email)
+  
+  if (result.success) {
+    return res.status(200).json(result)
+  } else {
+    return res.status(400).json(result)
+  }
+}
+
+
+const  handleUpdatePasswordRoute = async(req, res) => {
+  const { password , token } = req.body
+
+
+   if (!token) {
+    return res.status(400).json({
+      success: false,
+      error: 'token is required'
+    })
+  }
+
+  if (!password) {
+    return res.status(400).json({
+      success: false,
+      error: 'Password is required'
+    })
+  }
+
+  if (password.length < 6) {
+    return res.status(400).json({
+      success: false,
+      error: 'Password must be at least 6 characters'
+    })
+  }
+
+  const result = await updatePassword(password ,token)
+  
+  if (result.success) {
+    return res.status(200).json(result)
+  } else {
+    return res.status(400).json(result)
+  }
+}
+
+
+
+
+
+module.exports = { signup, login ,logOut , handleRequestResetRoute ,handleUpdatePasswordRoute  };

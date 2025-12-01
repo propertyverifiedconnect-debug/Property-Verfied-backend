@@ -5,7 +5,14 @@ dotenv.config();
 
   const supabaseAdmin = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  {
+    auth: {
+      // Prevents the admin client from trying to manage a session
+      autoRefreshToken: false, 
+      persistSession: false,
+    }
+  }
 );
 
 
