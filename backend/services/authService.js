@@ -31,7 +31,7 @@ const checkUser = async (userid) => {
 const requestPasswordReset = async(email) => {
   try {
     const { data, error } = await supabaseAdmin.auth.resetPasswordForEmail(email, {
-      redirectTo: `http://localhost:3000/auth/forgot-password/reset-password`,
+      redirectTo: `https://property-verfied-partner.vercel.app/auth/forgot-password/reset-password`,
     })
 
     if (error) throw error
