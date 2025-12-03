@@ -47,6 +47,7 @@ exports.createProperty = async (req, res) => {
       Lifestyle:body.Lifestyle || null,
       Apartmentsize:body.Apartmentsize || null,
       Options : body.Options || null,
+       brochure: body.brochure || null ,
       photos: null,
       status: suspected.data.suspect == false  ? "adminApproved": "pending"
     };
