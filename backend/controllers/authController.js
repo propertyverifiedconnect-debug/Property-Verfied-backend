@@ -216,7 +216,7 @@ const googleAuth = async (req, res) => {
       .eq('email', email)
       .single();
 
-      if(existingUser.auth_type == "email") return  res.status(400).json({ message: "email already exist" });
+      if(existingUser && existingUser.auth_type == "email") return  res.status(400).json({ message: "email already exist" });
 
     if (findError && findError.code !== 'PGRST116') {
       return res.status(500).json({ message: findError.message });
@@ -228,7 +228,7 @@ const googleAuth = async (req, res) => {
     if (!existingUser) {
       const { data: newUser, error: insertError } = await supabaseAdmin
         .from('users')
-        .insert([{ email, name, role , auth_type}])
+        .insert([{ email, name, role , auth_type:auth_type}])
         .select()
         .single();
 
@@ -256,7 +256,27 @@ const googleAuth = async (req, res) => {
 };
 
 
+const resetContact = async (req, res) => {
+  try {
+    const { contact, city} = req.body
+    const id = req.user.id
+ 
+
+      const { data: existingUser, error: findError } = await supabaseAdmin
+      .from('users')
+      .update({contact:contact , city:city})
+      .eq('id', id)
+      .single();
+
+    return res.status(200).json({ message:"Details update Successfully "})
+  
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: err.message });
+  }
+};
 
 
 
-module.exports = { signup, login ,logOut , handleRequestResetRoute ,handleUpdatePasswordRoute , googleAuth };
+
+module.exports = { signup, login ,logOut , handleRequestResetRoute ,handleUpdatePasswordRoute , googleAuth ,resetContact };
