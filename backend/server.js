@@ -30,6 +30,9 @@ const allowedOrigins = [
   "https://property-verfied-frontend.vercel.app",
   "https://property-verfied-partner.vercel.app",
   "https://property-verified-admin.vercel.app",
+  process.env.USER_URL,
+  process.env.PARTNER_URL,
+  process.env.ADMIN_URL
 ];
 
 

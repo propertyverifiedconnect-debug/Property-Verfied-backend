@@ -202,7 +202,8 @@ const  handleUpdatePasswordRoute = async(req, res) => {
 
 const googleAuth = async (req, res) => {
   try {
-    const { email, name, role } = req.body;
+    const { email, name, role } = req.body
+    const auth_type = 'google'
 
     if (!email || !name || !role) {
       return res.status(400).json({ message: "Email, name and role are required" });
@@ -215,6 +216,8 @@ const googleAuth = async (req, res) => {
       .eq('email', email)
       .single();
 
+      if(existingUser.auth_type == "email") return  res.status(400).json({ message: "email already exist" });
+
     if (findError && findError.code !== 'PGRST116') {
       return res.status(500).json({ message: findError.message });
     }
@@ -225,7 +228,7 @@ const googleAuth = async (req, res) => {
     if (!existingUser) {
       const { data: newUser, error: insertError } = await supabaseAdmin
         .from('users')
-        .insert([{ email, name, role }])
+        .insert([{ email, name, role , auth_type}])
         .select()
         .single();
 

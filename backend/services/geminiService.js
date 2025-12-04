@@ -16,9 +16,6 @@ async function GeminiCall(prompt) {
   }
 }
 
-
-
-
  const Getprompt = (mode , answer , question) =>{
 
   if(mode == "budget")
