@@ -2,6 +2,7 @@
 const { signupUser, loginUser, checkUser, requestPasswordReset, updatePassword } = require('../services/authService');
 const { createUserInDB } = require('../services/userService');
 const { generateToken } = require('../services/jwtService');
+const { supabaseAdmin } = require('../config/supabaseClient');
 
 
 const signup = async (req, res) => {
@@ -133,7 +134,7 @@ const login = async (req, res) => {
   
   // Clear all role-specific cookies
   ['admin', 'user', 'partner'].forEach(role => {
-    res.clzearCookie(`token_${role}`, {
+    res.clearCookie(`token_${role}`, {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? "none" : "lax",
@@ -199,7 +200,60 @@ const  handleUpdatePasswordRoute = async(req, res) => {
 }
 
 
+const googleAuth = async (req, res) => {
+  try {
+    const { email, name, role } = req.body;
+
+    if (!email || !name || !role) {
+      return res.status(400).json({ message: "Email, name and role are required" });
+    }
+
+    // 1️⃣ Check if user exists
+    const { data: existingUser, error: findError } = await supabaseAdmin
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .single();
+
+    if (findError && findError.code !== 'PGRST116') {
+      return res.status(500).json({ message: findError.message });
+    }
+
+    let user = existingUser;
+
+    // 2️⃣ If user doesn't exist → insert new user
+    if (!existingUser) {
+      const { data: newUser, error: insertError } = await supabaseAdmin
+        .from('users')
+        .insert([{ email, name, role }])
+        .select()
+        .single();
+
+      if (insertError) {
+        return res.status(500).json({ message: insertError.message });
+      }
+
+      user = newUser;
+    }
+
+    // 3️⃣ Generate JWT token
+    const token = generateToken({ id: user.id, email: user.email, role: user.role });
+
+    // 4️⃣ Return user + JWT
+    return res.status(200).json({
+      success: true,
+      jwt: token,
+      user,
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: err.message });
+  }
+};
 
 
 
-module.exports = { signup, login ,logOut , handleRequestResetRoute ,handleUpdatePasswordRoute  };
+
+
+module.exports = { signup, login ,logOut , handleRequestResetRoute ,handleUpdatePasswordRoute , googleAuth };
