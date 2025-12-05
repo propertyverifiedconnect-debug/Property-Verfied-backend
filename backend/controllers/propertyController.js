@@ -15,7 +15,18 @@ exports.createProperty = async (req, res) => {
       return res.json({message:"flag || suspect missing missing"})
     }
     
-    
+let rawOptions = body.Options;
+    let optionsPayload = null;
+
+    if (rawOptions) {
+        let optionsArray = Array.isArray(rawOptions) ? rawOptions : [rawOptions];
+        const flatOptions = optionsArray.flat(Infinity).filter(item => item);
+        
+     
+        const arrayLiteral = `{${flatOptions.join(',')}}`;
+
+        optionsPayload = arrayLiteral; // e.g., '{Parking,Security,Mart,Pool}'
+    }
 
    
     const payload = {
@@ -46,7 +57,7 @@ exports.createProperty = async (req, res) => {
       profession:body.profession||null ,
       Lifestyle:body.Lifestyle || null,
       Apartmentsize:body.Apartmentsize || null,
-      Options : body.Options || null,
+      Options: optionsPayload,
        brochure: body.brochure || null ,
       photos: null,
       status: suspected.data.suspect == false  ? "adminApproved": "pending"
