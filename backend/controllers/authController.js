@@ -57,13 +57,15 @@ const signupPartner = async (req, res) => {
       const email =form.email
       const password =form.password
       const name = form.name 
-      const contact = form.contact 
+      const contact = form.contact
+      const CompanyName = form.CompanyName 
       const city = form.city 
       const role = form.role
       const excutiveType = form.excutiveType 
       const rera = form.rera
 
       console.log(email ,password,name,contact ,city, role ,excutiveType ,rera)
+
 
 
     const isProduction = process.env.NODE_ENV === "production";
@@ -104,6 +106,7 @@ const signupPartner = async (req, res) => {
       contact,
       city,
       role,
+      CompanyName,
       excutiveType,
       rera,
       idProof: idProofUrl,
@@ -280,7 +283,7 @@ const handleUpdatePasswordRoute = async (req, res) => {
   }
 };
 
-const googleAuth = async (req, res) => {
+const googleAuthPartner = async (req, res) => {
   try {
     const { email, name, role } = req.body;
     const auth_type = "google";
@@ -295,7 +298,7 @@ const googleAuth = async (req, res) => {
     const { data: existingUser, error: findError } = await supabaseAdmin
       .from("users")
       .select("*")
-      .eq("email", email)
+      .eq("email", email).eq("role","partner")
       .single();
 
     if (existingUser && existingUser.auth_type == "email")
@@ -419,7 +422,7 @@ module.exports = {
   logOut,
   handleRequestResetRoute,
   handleUpdatePasswordRoute,
-  googleAuth,
+  googleAuthPartner,
   resetContact,
   signupPartner,
   resetContactPartner
