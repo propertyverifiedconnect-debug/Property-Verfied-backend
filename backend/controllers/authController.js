@@ -285,7 +285,7 @@ const handleUpdatePasswordRoute = async (req, res) => {
 
 const googleAuthPartner = async (req, res) => {
   try {
-    const { email, name, role } = req.body;
+    const { email, name, role , Id_token} = req.body;
     const auth_type = "google";
 
     if (!email || !name || !role) {
@@ -293,6 +293,11 @@ const googleAuthPartner = async (req, res) => {
         .status(400)
         .json({ message: "Email, name and role are required" });
     }
+
+      if (!Id_token) {
+      return res.status(400).json({ message: "Google ID token is required" });
+    }
+
 
     // 1️⃣ Check if user exists
     const { data: existingUser, error: findError } = await supabaseAdmin
@@ -304,6 +309,21 @@ const googleAuthPartner = async (req, res) => {
     if (existingUser && existingUser.auth_type == "email")
       return res.status(400).json({ message: "email already exist" });
 
+
+    
+      const { data: authData, error: authError } = await supabaseAdmin.auth.signInWithIdToken({
+      provider: 'google',
+      token:Id_token ,
+    });
+   
+     const { user: authUser, session } = authData;
+
+
+      if (authError) {
+      console.error("Supabase Auth Error:", authError);
+      return res.status(400).json({ message: authError.message });
+    }
+
     if (findError && findError.code !== "PGRST116") {
       return res.status(500).json({ message: findError.message });
     }
@@ -314,7 +334,7 @@ const googleAuthPartner = async (req, res) => {
     if (!existingUser) {
       const { data: newUser, error: insertError } = await supabaseAdmin
         .from("users")
-        .insert([{ email, name, role, auth_type: auth_type }])
+        .insert([{id:authUser.id ,email, name, role, auth_type: auth_type }])
         .select()
         .single();
 
@@ -373,6 +393,7 @@ const resetContactPartner = async (req, res) => {
       const id = req.user.id
       const contact = form.contact 
       const city = form.city 
+       const CompanyName = form.CompanyName 
       const excutiveType = form.excutiveType 
       const rera = form.rera 
 
@@ -404,7 +425,7 @@ const resetContactPartner = async (req, res) => {
 
       const { data: existingUser, error: findError } = await supabaseAdmin
       .from("users")
-      .update({ contact: contact, city: city ,excutiveType:excutiveType,rera:rera,idProof:idProofUrl
+      .update({ contact: contact, city: city ,excutiveType:excutiveType,rera:rera,idProof:idProofUrl,CompanyName:CompanyName
         })
       .eq("id", id)
       .single();
