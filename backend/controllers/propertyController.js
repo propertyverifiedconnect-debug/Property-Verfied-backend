@@ -69,13 +69,14 @@ exports.createProperty = async (req, res) => {
       allInclusive: body.allInclusive || null, // ✅ Add this
       priceNegotiable: body.priceNegotiable || null, // ✅ Add this
       taxExcluded: body.taxExcluded || null,
-      // ✅ Add this
       SuperBuildupArea: body.SuperBuildupArea || null,
       AvailabilityStatus: body.AvailabilityStatus || null,
       lengthPlot: body.lengthPlot || null,
       breathPlot: body.breathPlot || null,
       Boundary: body.Boundary || null,
       openSide: body.openSide || null,
+      sanctionType:body.sanctionType||null,
+      sanctionNo :body.sanctionNo || null ,
       construction: body.construction,
       status: suspected.data.suspect == false ? "adminApproved" : "pending",
     };
