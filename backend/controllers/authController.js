@@ -15,7 +15,9 @@ const signup = async (req, res) => {
     const { email, password, name, contact, city, role } = req.body;
     const isProduction = process.env.NODE_ENV === "production";
 
-    const { data, error } = await signupUser(email, password);
+    const  auth_email = `${role}_${email}`
+
+    const { data, error } = await signupUser(auth_email, password);
     if (error) return res.status(400).json({ error: error.message });
 
     const userId = data.user.id;
@@ -66,11 +68,11 @@ const signupPartner = async (req, res) => {
 
       console.log(email ,password,name,contact ,city, role ,excutiveType ,rera)
 
-
+  const  auth_email = `${role}_${email}`
 
     const isProduction = process.env.NODE_ENV === "production";
 
-    const { data, error } = await signupUser(email, password);
+    const { data, error } = await signupUser(auth_email, password);
     if (error) return res.status(400).json({ error: error.message });
 
     const userId = data.user.id;
@@ -154,10 +156,12 @@ const login = async (req, res) => {
   try {
     const { email, password, role } = req.body;
     const isProduction = process.env.NODE_ENV === "production";
+    const auth_email = `${role}_${email}`
+    console.log(auth_email)
 
     console.log("Which Environment:", process.env.NODE_ENV);
 
-    const { data, error } = await loginUser(email, password);
+    const { data, error } = await loginUser(auth_email, password);
     console.log("Supabase Login Call()");
 
     if (error) return res.status(400).json({ error: error.message });
