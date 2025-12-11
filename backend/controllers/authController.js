@@ -289,44 +289,38 @@ const handleUpdatePasswordRoute = async (req, res) => {
 
 const googleAuthPartner = async (req, res) => {
   try {
-    const { email, name, role , Id_token} = req.body;
-    const auth_type = "google";
+    const { email, name, role, Id_token } = req.body;
 
     if (!email || !name || !role) {
-      return res
-        .status(400)
-        .json({ message: "Email, name and role are required" });
+      return res.status(400).json({ message: "Email, name and role are required" });
     }
 
-      if (!Id_token) {
+    if (!Id_token) {
       return res.status(400).json({ message: "Google ID token is required" });
     }
 
+    const auth_email = `${role}_${email}`;
 
-    // 1️⃣ Check if user exists
+    // 1️⃣ Authenticate with Supabase
+    const { data: authData, error: authError } = await supabaseAdmin.auth.signInWithIdToken({
+      provider: "google",
+      email: auth_email,
+      token: Id_token,
+    });
+
+    if (authError) {
+      return res.status(400).json({ message: authError.message });
+    }
+
+    const { user: authUser } = authData;
+
+    // 2️⃣ Check if user exists in DB (use original email)
     const { data: existingUser, error: findError } = await supabaseAdmin
       .from("users")
       .select("*")
-      .eq("email", email).eq("role","partner")
+      .eq("email", email)
+      .eq("role", "partner")
       .single();
-
-    if (existingUser && existingUser.auth_type == "email")
-      return res.status(400).json({ message: "email already exist" });
-
-
-    
-      const { data: authData, error: authError } = await supabaseAdmin.auth.signInWithIdToken({
-      provider: 'google',
-      token:Id_token ,
-    });
-   
-     const { user: authUser, session } = authData;
-
-
-      if (authError) {
-      console.error("Supabase Auth Error:", authError);
-      return res.status(400).json({ message: authError.message });
-    }
 
     if (findError && findError.code !== "PGRST116") {
       return res.status(500).json({ message: findError.message });
@@ -334,11 +328,24 @@ const googleAuthPartner = async (req, res) => {
 
     let user = existingUser;
 
-    // 2️⃣ If user doesn't exist → insert new user
+    // 3️⃣ If exists with normal email login → reject
+    if (existingUser && existingUser.auth_type === "email") {
+      return res.status(400).json({ message: "Email already exists with password login" });
+    }
+
+    // 4️⃣ Create new user
     if (!existingUser) {
       const { data: newUser, error: insertError } = await supabaseAdmin
         .from("users")
-        .insert([{id:authUser.id ,email, name, role, auth_type: auth_type }])
+        .insert([
+          {
+            id: authUser.id,
+            email,
+            name,
+            role,
+            auth_type: "google",
+          },
+        ])
         .select()
         .single();
 
@@ -349,14 +356,13 @@ const googleAuthPartner = async (req, res) => {
       user = newUser;
     }
 
-    // 3️⃣ Generate JWT token
+    // 5️⃣ Generate JWT
     const token = generateToken({
       id: user.id,
       email: user.email,
       role: user.role,
     });
 
-    // 4️⃣ Return user + JWT
     return res.status(200).json({
       success: true,
       jwt: token,
