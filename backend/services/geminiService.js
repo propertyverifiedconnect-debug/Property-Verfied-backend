@@ -31,7 +31,7 @@ async function GeminiCall(prompt) {
       }
      as the   Budget analyiser analyses the budget using answer return output in json as follows 
       {
-       safe_purchase_limit : analyis the Safe Purchase Limit the limit in the lowernumber-uppernumber limit lakh format ,
+       safe_purchase_limit : analyis the Safe Purchase Limit the limit in the lowernumber-uppernumber limit in Number format ,
        emi_capacity : give the emi capacity for the per month,
        risk:risk level (high , low , mid),
        recommandation : why to buy this kind of budget with satatisics and make it short of 2-3 lines only   
@@ -56,7 +56,8 @@ async function GeminiCall(prompt) {
        best_match :best_match according to his profession what is best for him to be a part of , means if he is a  IT Professionals then the best match is Young IT Professionals Hub  ,
        recommandation : why this is the best match  and make it short of 2-3 lines only  , 
        area : Which are of the city his perfect for him it will be the array , 
-       people : Or any people in that particular who belongs to same profession or the diffrent but can help you and give there personal info like name , profession and area and the image link
+       people : Or any people in that particular who belongs to same profession or the diffrent but can help you and give there personal info like name , profession and area and the image link ,
+       matching_score : it is a score for from 1 to 100 which tell how many the area is match for the user
       }
        donot give the Explanation of Choices only json response       `
 
@@ -133,9 +134,34 @@ city,
 
 
 
+const GetBudgetPropertyService = async (budget) =>{
+ 
+  const Budget = budget.split("-")
+  const min = Budget[0]
+  const max = Budget[1]
+
+ return await supabaseAdmin.from("propertyapproval").select("*").gte("price", min)
+    .lte("price", max).limit(2);
+}
+
+const GetCategoryPropertyService = async (lowerArea, city) => {
+  const orCondition = lowerArea
+    .map(area => `location.ilike.%${area}%`)
+    .join(',');
+
+  return await supabaseAdmin
+    .from("propertyapproval")
+    .select("*")
+    .eq("city", city)
+    .or(orCondition)
+    .limit(2);
+};
 
 
 
-module.exports = { GeminiCall ,Getprompt , cleanAndParseJSON ,getRentServices }
+
+
+
+module.exports = { GeminiCall ,Getprompt , cleanAndParseJSON ,getRentServices , GetBudgetPropertyService ,GetCategoryPropertyService }
 
 

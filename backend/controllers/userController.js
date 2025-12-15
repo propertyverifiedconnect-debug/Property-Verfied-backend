@@ -1,6 +1,6 @@
 // controllers/userController.js
 const { getFlagvalueService, checkSuspiciousPartnerService } = require('../services/adminService');
-const { getUserById, getAllApprovedPropertyService, getApprovedPropertybyIDService, setApprovalBookingService, getBookingforApprovalService, getBookingforApprovalbyIDService, setBookingtoApprovalService, getApprovedBookingService, getUserOrderService } = require('../services/userService');
+const { getUserById, getAllApprovedPropertyService, getApprovedPropertybyIDService, setApprovalBookingService, getBookingforApprovalService, getBookingforApprovalbyIDService, setBookingtoApprovalService, getApprovedBookingService, getUserOrderService, AddPropertyInWishlistService, getWhishlistPropertyByIdService, DelectInWishlistService } = require('../services/userService');
 
 const getProfile = async (req, res) => {
   try {
@@ -25,6 +25,30 @@ const getAllApprovedProperty  = async (req, res) => {
     
   
       if (error) throw error;
+  
+      res.status(200).json({
+        message: "✅ ALL properties fetched successfully",
+        properties: data,
+      });
+    } catch (error) {
+      console.error("❌ Error fetching properties:", error);
+      res.status(500).json({ error: error.message });
+    }
+};
+
+
+const getWhishlistPropertyById  = async (req, res) => {
+    try {
+       
+       const user_id = req.user.id
+      const { data, error } = await getWhishlistPropertyByIdService(user_id); 
+    
+  
+      if (error) {
+        return res.status(400).json({
+        message: "Property Already exist",
+      })
+      };
   
       res.status(200).json({
         message: "✅ ALL properties fetched successfully",
@@ -187,10 +211,58 @@ const getAllApprovedProperty  = async (req, res) => {
 };
 
 
+const AddPropertyInWishlist = async (req , res)=>{
+try{
+    
+    const {propertyId} = req.body;
+    const user_id = req.user.id 
+  
+    const {data , error } = await AddPropertyInWishlistService(user_id ,propertyId);
+    
+    if (error) {
+        return res.status(400).json({
+        message: "Property Already exist",
+      })
+      };
+     
+   res.status(200).json({message:"property is added in the whislist" , data :data})
+
+}catch(error)
+{
+  console.error("Property not add"  ,error)
+}
+ 
+}
+
+
+const DelectInWishlist = async (req , res)=>{
+try{
+    
+    const {propertyId} = req.body;
+    const user_id = req.user.id 
+  
+    const {data , error } = await DelectInWishlistService(user_id ,propertyId);
+    
+   if (error)
+   {
+    console.log("Error occur in the insertion" , error)
+   }
+     
+   res.status(200).json({message:"property deleted in the whislist" , data :data})
+
+}catch(error)
+{
+  console.error("Property not add"  ,error)
+}
+ 
+}
+
+
 
 
 module.exports = { getProfile, getDashboard ,
    getAllApprovedProperty,getApprovedPropertybyID , 
    setApprovalBooking , getBookingforApproval ,
   getBookingforApprovalbyID,
-setBookingtoApproval , getApprovedBooking ,getUserOrder };
+setBookingtoApproval , getApprovedBooking ,getUserOrder ,
+AddPropertyInWishlist,getWhishlistPropertyById ,DelectInWishlist  };

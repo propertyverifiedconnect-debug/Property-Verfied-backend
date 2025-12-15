@@ -21,6 +21,15 @@ const getAllApprovedPropertyService = async()=>{
       .order("created_at", { ascending: false }); 
 };
 
+
+const getWhishlistPropertyByIdService = async(user_id)=>{
+  return await supabaseAdmin
+      .from("wishlist")
+      .select(`*, property_id (*)`).eq("user_id", user_id)
+      .order("created_at", { ascending: false }); 
+};
+
+
 const getApprovedPropertybyIDService = async(id) =>{
   return await supabaseAdmin.from('propertyapproval').select(`*, users (
         id,
@@ -159,10 +168,47 @@ const getUserOrderService = async (id) =>{
 }
 
 
+const AddPropertyInWishlistService = async (user_id, propertyid) => {
+  // 1️⃣ Check existing
+  const { data: existing } = await supabaseAdmin
+    .from("wishlist")
+    .select("id")
+    .eq("user_id", user_id)
+    .eq("property_id", propertyid)
+    .single();
+
+  if (existing) {
+    return { data: null, error: { message: "Already wishlisted" } };
+  }
+
+  // 2️⃣ Insert
+  return await supabaseAdmin
+    .from("wishlist")
+    .insert({ user_id, property_id: propertyid })
+    .select()
+    .single();
+};
+
+
+const DelectInWishlistService = async (user_id, propertyid) => {
+  return await supabaseAdmin
+    .from("wishlist")
+    .delete()
+    .eq("user_id", user_id)
+    .eq("property_id", propertyid)
+    .select();
+};
+
+
+
+
+
 module.exports = { createUserInDB, getUserById 
 ,getAllApprovedPropertyService ,getApprovedPropertybyIDService,
 setApprovalBookingService ,getBookingforApprovalService,
 getBookingforApprovalbyIDService ,setBookingtoApprovalService ,
 getApprovedBookingService ,
-getUserOrderService
+getUserOrderService,AddPropertyInWishlistService,
+getWhishlistPropertyByIdService,
+DelectInWishlistService
 };
