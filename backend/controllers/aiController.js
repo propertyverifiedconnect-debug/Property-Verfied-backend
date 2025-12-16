@@ -6,8 +6,13 @@ const {
   GetBudgetPropertyService,
   GetCategoryPropertyService,
 } = require("../services/geminiService");
+const { SetUserBehaviorService } = require("../services/user_behavior");
 
 const PropertyVerifiedAi = async (req, res) => {
+  
+   const  Id = req.user.id;
+  
+
   try {
     const { mode, answers, questions } = req.body;
     console.log(mode, answers, questions);
@@ -44,6 +49,12 @@ const PropertyVerifiedAi = async (req, res) => {
        const { data: CategoryProperties, error } = await GetCategoryPropertyService (
         cleanResponse.area , answers[0]
       );
+    
+       const {data:user_behavior , error :user_behavior_error}  = await SetUserBehaviorService({ userId : Id , city:answers[0] , occupation:answers[1] ,lifestyle:answers[2] , family_type:answers[3] }) 
+       
+        if (user_behavior_error) return console.log("Error occur in the inserion" , user_behavior_error)
+
+
 
       if (error) {
         console.log("Error Occurs in  Getting in the Budget Property", error);

@@ -4,7 +4,7 @@ const { PropertyVerifiedAi } = require('../controllers/aiController');
 
 const router = express.Router();
 
- router.post("/genrate", PropertyVerifiedAi);
+ router.post("/genrate",authorize(["user"]) ,PropertyVerifiedAi);
 
 
 

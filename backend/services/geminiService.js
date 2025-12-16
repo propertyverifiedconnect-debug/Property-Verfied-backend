@@ -70,7 +70,7 @@ async function GeminiCall(prompt) {
       the question of the user is 
       question :${answer}
       {
-       answer: give the answer of  the question ;
+       answer: give the answer of  the question  in the text only discription not json , not Object just text;
       }
       
     `
@@ -156,6 +156,8 @@ const GetCategoryPropertyService = async (lowerArea, city) => {
     .or(orCondition)
     .limit(2);
 };
+
+
 
 
 
