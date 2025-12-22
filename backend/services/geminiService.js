@@ -70,7 +70,7 @@ async function GeminiCall(prompt) {
       the question of the user is 
       question :${answer}
       {
-       answer: give the answer of  the question  in the text only discription not json , not Object just text;
+       answer: give the answer of  the question  in the text only discription not json , not Object just texto;
       }
       
     `

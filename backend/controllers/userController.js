@@ -1,6 +1,6 @@
 // controllers/userController.js
 const { getFlagvalueService, checkSuspiciousPartnerService } = require('../services/adminService');
-const { getUserById, getAllApprovedPropertyService, getApprovedPropertybyIDService, setApprovalBookingService, getBookingforApprovalService, getBookingforApprovalbyIDService, setBookingtoApprovalService, getApprovedBookingService, getUserOrderService, AddPropertyInWishlistService, getWhishlistPropertyByIdService, DelectInWishlistService } = require('../services/userService');
+const { getUserById, getAllApprovedPropertyService, getApprovedPropertybyIDService, setApprovalBookingService, getBookingforApprovalService, getBookingforApprovalbyIDService, setBookingtoApprovalService, getApprovedBookingService, getUserOrderService, AddPropertyInWishlistService, getWhishlistPropertyByIdService, DelectInWishlistService, getUserBehaviorService } = require('../services/userService');
 
 const getProfile = async (req, res) => {
   try {
@@ -94,6 +94,15 @@ const getWhishlistPropertyById  = async (req, res) => {
     {
        return res.json({message:" partner id missing"})
     }
+
+    const {data : user_behavior_data , error:user_behavior_error} = await getUserBehaviorService(user.id); 
+
+    if (user_behavior_error) {
+      return res.json({message: "user behvaior missing"})
+    }
+
+    console.log( "user Behavior data - ", user_behavior_data);
+    
    
    
     const { data, error } = await setApprovalBookingService( propertyid, visitType, date, timeSlot ,user.id ,suspected.data.suspect) 

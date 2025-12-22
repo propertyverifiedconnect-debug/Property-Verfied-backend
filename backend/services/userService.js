@@ -56,6 +56,14 @@ const setApprovalBookingService = async(propertyid, visitType, date, timeSlot ,u
 }
 
 
+const getUserBehaviorService  = async (id) =>{
+    return supabaseAdmin.from("user_behavior").select("*").eq( "user_id" ,id);
+}
+
+
+
+
+
 const getBookingforApprovalService = async () => {
   return await supabaseAdmin
     .from('bookings')
@@ -210,5 +218,6 @@ getBookingforApprovalbyIDService ,setBookingtoApprovalService ,
 getApprovedBookingService ,
 getUserOrderService,AddPropertyInWishlistService,
 getWhishlistPropertyByIdService,
-DelectInWishlistService
+DelectInWishlistService,
+getUserBehaviorService 
 };
