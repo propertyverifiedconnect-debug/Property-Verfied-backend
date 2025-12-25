@@ -40,7 +40,7 @@ const getApprovedPropertybyIDService = async(id) =>{
 }
 
 
-const setApprovalBookingService = async(propertyid, visitType, date, timeSlot ,userid ,suspect) =>{
+const setApprovalBookingService = async(propertyid, visitType, date, timeSlot ,userid ,suspect , AI_Percentage, AI_Description, AI_Behaviortype ) =>{
   return await supabaseAdmin
       .from('bookings')
       .insert({
@@ -49,7 +49,10 @@ const setApprovalBookingService = async(propertyid, visitType, date, timeSlot ,u
         visit_type: visitType,
         visit_date: date,
         visit_time: timeSlot,
-        status: suspect ==false ? 'approved': 'pending'
+        status: suspect ==false ? 'approved': 'pending',
+         AI_Percentage, 
+         AI_Description, 
+         AI_Behaviortype 
       })
       .select()
       .single();
