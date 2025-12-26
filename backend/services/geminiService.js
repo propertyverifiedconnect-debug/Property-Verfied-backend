@@ -192,6 +192,7 @@ Return ONLY a valid JSON object with no additional text, explanations, or markdo
 
 IMPORTANT:
 - AI_Percentage should be realistic (0-100), considering all matching and mismatching factors
+- Interprete like that it we are showing user interest not the serach history expose
 - AI_Description should be specific and reference actual data points from the analysis
 - AI_Behaviortype should capture the essence of what drives the user's property decisions
 - Return ONLY the JSON object, nothing else`;
