@@ -168,6 +168,7 @@ const getUserOrderService = async (id) =>{
         price,
         property_name,
         photos,
+        looking_for,
         user_id (
           id,
           name,

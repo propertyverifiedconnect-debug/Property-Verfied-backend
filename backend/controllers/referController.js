@@ -1,7 +1,7 @@
 // controllers/authController.js
 
 const { getFlagvalueService, checkSuspiciousPartnerService } = require("../services/adminService");
-const { partnerIDprojectNameService, referIntoDBService, getCustomerleadService, setCustomerleadtoApprovalService, getAllApprovedLeadService } = require("../services/referService");
+const { partnerIDprojectNameService, referIntoDBService, getCustomerleadService, setCustomerleadtoApprovalService, getAllApprovedLeadService, getPropertyNameService } = require("../services/referService");
 const { getFlagValue } = require("./adminController");
 
 
@@ -100,4 +100,23 @@ const referIntoDB = async (req, res) => {
 };
 
 
-module.exports = { referIntoDB ,getAllLeadtoApproved ,setCustomerleadtoApproval ,getAllApprovedLead };
+ const getPropertyName= async (req, res) => {
+   
+  try { 
+
+    const { data, error } = await getPropertyNameService()
+
+    if (error) throw error;
+
+    res.status(200).json({
+      message: "✅ Property Name fetched successfully",
+      Property_name :data
+    });
+  } catch (error) {
+    console.error("❌ Error fetching properties:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+module.exports = { referIntoDB ,getAllLeadtoApproved ,setCustomerleadtoApproval ,getAllApprovedLead ,getPropertyName };

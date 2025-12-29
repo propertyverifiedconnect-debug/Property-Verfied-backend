@@ -53,7 +53,12 @@ const referIntoDBService = async (
 };
 
 
+  const getPropertyNameService = async() =>{
+    return await supabaseAdmin.from("propertyapproval").select("property_name")
+  }
+
 
 
 module.exports = { partnerIDprojectNameService , referIntoDBService 
-  , getCustomerleadService ,setCustomerleadtoApprovalService ,getAllApprovedLeadService }
+  , getCustomerleadService ,setCustomerleadtoApprovalService ,getAllApprovedLeadService 
+ ,getPropertyNameService}
