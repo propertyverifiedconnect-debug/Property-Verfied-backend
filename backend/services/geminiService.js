@@ -99,20 +99,28 @@ const cleanAndParseJSON = (aiResponseString) => {
 };
 
 const getRentServices = async (answer) => {
-  const city = answer[0].toLowerCase();
-  const room = answer[1] == "Shared room" ? "Shared" : "Private";
-  const budget = answer[2];
+  const city = answer[0]
+  const budget = answer[1];
+  const room = answer[2] == "Room" ? "Independent House / Villa" : "Apartment";
   const profession = answer[3];
+  const RoomatePerfer = answer[5]
+  const Foodpreference =answer[6]
+  const DrinksAndSmokeAllowed =answer[7]
+  const Religion = answer[8]
 
-  console.log(city, room, profession, budget);
+  console.log(city, room, profession, budget ,RoomatePerfer , Foodpreference , DrinksAndSmokeAllowed , Religion);
 
   const { data, error } = await supabaseAdmin
     .from("propertyapproval")
     .select("* ,user_id(name)")
     .eq("looking_for", "Rent / Lease")
     .eq("city", city)
-    .eq("roomtype", room)
-    .eq("profession", profession); // Rent <= budget
+    .eq("property_type", room)
+    .eq("profession", profession)
+    .eq("RoomatePerfer", RoomatePerfer)
+    .eq("Foodpreference", Foodpreference)
+      //  .eq("DrinksAndSmokeAllowed",  DrinksAndSmokeAllowed)
+    .eq("Religion",  Religion); // Rent <= budget
   // Sort by cheapest first
 
   if (error) {
@@ -120,8 +128,9 @@ const getRentServices = async (answer) => {
     throw new Error(error.message);
   }
 
+   console.log(data)
   // ✅ Return empty array if no results
-  return data || [];
+  return data ;
 };
 
 const GetBudgetPropertyService = async (budget) => {

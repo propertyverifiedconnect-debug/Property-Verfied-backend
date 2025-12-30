@@ -75,9 +75,14 @@ exports.createProperty = async (req, res) => {
       breathPlot: body.breathPlot || null,
       Boundary: body.Boundary || null,
       openSide: body.openSide || null,
-      sanctionType:body.sanctionType||null,
-      sanctionNo :body.sanctionNo || null ,
-      construction: body.construction,
+      sanctionType: body.sanctionType || null,
+      sanctionNo: body.sanctionNo || null,
+      isNoise: body.isNoise || null,
+      Foodpreference: body.Foodpreference || null,
+      DrinksAndSmokeAllowed: body.DrinksAndSmokeAllowed || null,
+      RoomatePerfer: body.RoomatePerfer || null,
+      Religion: body.Religion || null,
+      construction: body.construction || null,
       status: suspected.data.suspect == false ? "adminApproved" : "pending",
     };
 
