@@ -100,13 +100,20 @@ const cleanAndParseJSON = (aiResponseString) => {
 
 const getRentServices = async (answer) => {
   const city = answer[0]
-  const budget = answer[1];
-  const room = answer[2] == "Room" ? "Independent House / Villa" : "Apartment";
-  const profession = answer[3];
-  const RoomatePerfer = answer[5]
-  const Foodpreference =answer[6]
-  const DrinksAndSmokeAllowed =answer[7]
-  const Religion = answer[8]
+  const RoomeType =answer[1]
+  const budget = answer[2];
+  const room = answer[3] == "Room" ? "Independent House / Villa" : "Apartment";
+  const profession = answer[4];
+  const RoomatePerfer = answer[6]
+  const Foodpreference =answer[7]
+const DrinksAndSmokeAllowed = 
+  answer[8] == "Do Somking" ? "Somking Allowed" : 
+  answer[8] == "Do Drinking" ? "Drinking allowed" : 
+  answer[8] == "Do Both" ? "Both" : 
+  answer[8] == "Do None" ? "None" : 
+  "Unknown";
+
+  const Religion = answer[9]
 
   console.log(city, room, profession, budget ,RoomatePerfer , Foodpreference , DrinksAndSmokeAllowed , Religion);
 
@@ -116,12 +123,10 @@ const getRentServices = async (answer) => {
     .eq("looking_for", "Rent / Lease")
     .eq("city", city)
     .eq("property_type", room)
-    .eq("profession", profession)
     .eq("RoomatePerfer", RoomatePerfer)
     .eq("Foodpreference", Foodpreference)
-      //  .eq("DrinksAndSmokeAllowed",  DrinksAndSmokeAllowed)
-    .eq("Religion",  Religion); // Rent <= budget
-  // Sort by cheapest first
+       .eq("DrinksAndSmokeAllowed",  DrinksAndSmokeAllowed)
+    .eq("Religion",  Religion); 
 
   if (error) {
     console.error("Supabase query error:", error);

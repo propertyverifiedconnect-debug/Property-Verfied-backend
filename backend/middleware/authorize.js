@@ -46,7 +46,7 @@ const authorize = (roles = []) => {
     }
 
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET ,{algorithms:['HS256']});
       
       console.log('Token decoded successfully:', decoded);
       console.log('Token expires at:', new Date(decoded.exp * 1000));
