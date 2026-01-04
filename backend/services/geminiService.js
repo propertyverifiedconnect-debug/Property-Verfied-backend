@@ -1,6 +1,7 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { supabaseAdmin } = require("../config/supabaseClient");
 const { json } = require("express");
+const { SetUserBehaviorService } = require("./user_behavior");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -57,7 +58,7 @@ const Getprompt = (mode, answer, question) => {
       {
        best_match :best_match according to his profession what is best for him to be a part of , means if he is a  IT Professionals then the best match is Young IT Professionals Hub  ,
        recommandation : why this is the best match  and make it short of 2-3 lines only  , 
-       area : Which are of the city his perfect for him it will be the array , 
+       area : Which area of the city his perfect for him it will be the array and it will only be the area name not the discription  , 
        people : Or any people in that particular who belongs to same profession or the diffrent but can help you and give there personal info like name , profession and area and the image link ,
        matching_score : it is a score for from 1 to 100 which tell how many the area is match for the user
       }
@@ -98,26 +99,30 @@ const cleanAndParseJSON = (aiResponseString) => {
   }
 };
 
-const getRentServices = async (answer) => {
-  const city = answer[0]
-  const RoomeType =answer[1]
-  const budget = answer[2];
+const getRentServices = async (answer , Id) => {
+  const city = answer[0];
+  const RoomeType = answer[1];
+  const budget = answer[2].replace("₹", "").split("-");
+  const MinBudget = Number(budget[0].replace(",", ""));
+  const MaxBuget = Number(budget[1].replace(",", ""));
   const room = answer[3] == "Room" ? "Independent House / Villa" : "Apartment";
   const profession = answer[4];
-  const RoomatePerfer = answer[6]
-  const Foodpreference =answer[7]
-const DrinksAndSmokeAllowed = 
-  answer[8] == "Do Somking" ? "Somking Allowed" : 
-  answer[8] == "Do Drinking" ? "Drinking allowed" : 
-  answer[8] == "Do Both" ? "Both" : 
-  answer[8] == "Do None" ? "None" : 
-  "Unknown";
+  const RoomatePerfer = answer[6];
+  const Foodpreference = answer[7];
+  const DrinksAndSmokeAllowed =
+    answer[8] == "Do Smoking"
+      ? "Smoking Allowed"
+      : answer[8] == "Do Drinking"
+      ? "Drinking allowed"
+      : answer[8] == "Do Both"
+      ? "Both"
+      : answer[8] == "Do None"
+      ? "None"
+      : "Unknown";
 
-  const Religion = answer[9]
+  const Religion = answer[9].replace(/\s/g, "");
 
-  console.log(city, room, profession, budget ,RoomatePerfer , Foodpreference , DrinksAndSmokeAllowed , Religion);
-
-  const { data, error } = await supabaseAdmin
+  let query = supabaseAdmin
     .from("propertyapproval")
     .select("* ,user_id(name)")
     .eq("looking_for", "Rent / Lease")
@@ -125,23 +130,75 @@ const DrinksAndSmokeAllowed =
     .eq("property_type", room)
     .eq("RoomatePerfer", RoomatePerfer)
     .eq("Foodpreference", Foodpreference)
-       .eq("DrinksAndSmokeAllowed",  DrinksAndSmokeAllowed)
-    .eq("Religion",  Religion); 
+    .eq("DrinksAndSmokeAllowed", DrinksAndSmokeAllowed)
+    .eq("Religion", Religion)
+    .eq("roomtype", RoomeType)
+    .gte("price", MinBudget)
+    .lte("price", MaxBuget);
+   
+    const Final_budget = String(`₹${MinBudget}-₹${MaxBuget}`)
+  
+  // Only add Religion filter if it's not NULL or empty
+  // if (Religion && Religion !== "NULL" && Religion.trim() !== "") {
+  //   query = query.eq("Religion", Religion);
+  // }
 
+  console.table({
+    city,
+    room,
+    profession,
+    RoomatePerfer,
+    Foodpreference,
+    DrinksAndSmokeAllowed,
+    Religion,
+    RoomeType,
+    MinBudget,
+    MaxBuget,
+  Final_budget
+  });
+
+  const { data: user_behavior, error: user_behavior_error } =
+    await SetUserBehaviorService({
+      userId: Id,
+      Rent_area:city,
+      Rent_Budget:Final_budget,
+      Rent_property_type:room,
+      Roommate_type:RoomatePerfer,
+      Food_perferances:Foodpreference,
+      DrinkOrSmoke:DrinksAndSmokeAllowed,
+      Religion :Religion 
+    });
+
+  if (user_behavior_error)
+    return console.log("Error occur in the inserion", user_behavior_error);
+
+  const { data, error } = await query;
   if (error) {
     console.error("Supabase query error:", error);
     throw new Error(error.message);
   }
 
-   console.log(data)
+  console.log(data);
   // ✅ Return empty array if no results
-  return data ;
+  return data;
 };
 
-const GetBudgetPropertyService = async (budget) => {
+const GetBudgetPropertyService = async (budget ,Id) => {
   const Budget = budget.split("-");
   const min = Budget[0];
   const max = Budget[1];
+
+  const Final_budget  = String(`₹${min}-₹${max}`)
+
+    const { data: user_behavior, error: user_behavior_error } =
+    await SetUserBehaviorService({
+      userId: Id,
+      Purchase_Budget:Final_budget
+    });
+
+  if (user_behavior_error)
+    return console.log("Error occur in the inserion", user_behavior_error);
+
 
   return await supabaseAdmin
     .from("propertyapproval")
@@ -152,21 +209,20 @@ const GetBudgetPropertyService = async (budget) => {
 };
 
 const GetCategoryPropertyService = async (lowerArea, city) => {
+  console.log(lowerArea);
   const orCondition = lowerArea
     .map((area) => `location.ilike.%${area}%`)
     .join(",");
 
   return await supabaseAdmin
     .from("propertyapproval")
-    .select("*")
+    .select("*, bookings(count)")
     .eq("city", city)
     .or(orCondition)
     .limit(2);
 };
 
 const GetAIresponseUserService = async (user_behavior, property_details) => {
-  
-
   const prompt = `You are an AI property purchase predictor. Analyze the user's search history and behavior patterns, then evaluate how well the given property matches their preferences.
 
 TASK:
@@ -177,6 +233,20 @@ ${JSON.stringify(user_behavior, null, 2)}
 
 PROPERTY DETAILS TO EVALUATE:
 ${JSON.stringify(property_details, null, 2)}
+
+NOTE: 
+- In the USER SEARCH HISTORY & BEHAVIOR Changes -> 
+Rent_area 
+Rent_Budget
+Rent_property_type
+Profession 
+Rommate_type 
+Food_perferances
+DrinkOrSmoke
+Religion 
+are the Rent deatails use this details when the Looking_for in the PROPERTY DETAILS is
+Rent / Lease Other are the selling Detials 
+
 
 ANALYSIS INSTRUCTIONS:
 1. Examine the user's historical preferences:
@@ -213,19 +283,16 @@ IMPORTANT:
 - AI_Behaviortype should capture the essence of what drives the user's property decisions
 - Return ONLY the JSON object, nothing else`;
 
-
-
   const data = await GeminiCall(prompt);
-  const  cleanResponse = cleanAndParseJSON(data)
+  const cleanResponse = cleanAndParseJSON(data);
 
+  console.log(data);
 
-  console.log(data)
-
- return {
-  AI_Percentage: cleanResponse.AI_Percentage,
-  AI_Description: cleanResponse.AI_Description,
-  AI_Behaviortype: cleanResponse.AI_Behaviortype
-};
+  return {
+    AI_Percentage: cleanResponse.AI_Percentage,
+    AI_Description: cleanResponse.AI_Description,
+    AI_Behaviortype: cleanResponse.AI_Behaviortype,
+  };
 };
 
 module.exports = {

@@ -25,7 +25,7 @@ const PropertyVerifiedAi = async (req, res) => {
       const cleanResponse = cleanAndParseJSON(Geminiresponse);
 
       const { data: BudgetProperties, error } = await GetBudgetPropertyService(
-        cleanResponse.safe_purchase_limit
+        cleanResponse.safe_purchase_limit, Id
       );
 
       if (error) {
@@ -38,7 +38,7 @@ const PropertyVerifiedAi = async (req, res) => {
         BudgetProperties,
       });
     } else if (mode == "rent") {
-      const cleanResponse = await getRentServices(answers);
+      const cleanResponse = await getRentServices(answers ,Id);
 
       res.json({ message: "Rent match successfully", cleanResponse });
     } else if (mode == "category") {

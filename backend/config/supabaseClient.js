@@ -11,6 +11,7 @@ dotenv.config();
       // Prevents the admin client from trying to manage a session
       autoRefreshToken: false, 
       persistSession: false,
+      detectSessionInUrl: false
     }
   }
 );
