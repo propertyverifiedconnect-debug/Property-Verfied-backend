@@ -1,9 +1,11 @@
 // controllers/userController.js
+const { supabaseAdmin } = require("../config/supabaseClient");
 const {
   getFlagvalueService,
   checkSuspiciousPartnerService,
 } = require("../services/adminService");
 const { GetAIresponseUserService } = require("../services/geminiService");
+const { SetUserBehaviorService } = require("../services/user_behavior");
 const {
   getUserById,
   getAllApprovedPropertyService,
@@ -267,6 +269,44 @@ const DelectInWishlist = async (req, res) => {
   }
 };
 
+
+const  SetUserInterest = async (req , res) => {
+   try {
+    const  submitData  = req.body;
+    const Id = req.user.id
+     
+    console.log(submitData)
+    
+    SetUserBehaviorService({
+      userId:Id,
+      city : submitData.area,
+      Purchase_Budget: submitData.income,
+      occupation:submitData. profession,
+      Rent_property_type:submitData.propertyType
+    })
+
+    const { data, error } = await supabaseAdmin
+      .from("users")
+      .update({ is_Interested_filled: true })
+      .eq("id", Id);
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(400).json({ message: "Failed to update interest" });
+    }
+
+ console.log("added")
+    res.status(200)
+      .json({ message: "Interest Added"});
+  } catch (error) {
+    console.error("Property not add", error);
+  }
+   
+}
+ 
+
+
+
 module.exports = {
   getProfile,
   getDashboard,
@@ -281,4 +321,5 @@ module.exports = {
   AddPropertyInWishlist,
   getWhishlistPropertyById,
   DelectInWishlist,
+  SetUserInterest
 };

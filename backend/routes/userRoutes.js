@@ -1,5 +1,5 @@
 const express = require('express');
-const { getProfile, getDashboard, getAllApprovedProperty, getApprovedPropertybyID, setApprovalBooking, getBookingforApproval, getBookingforApprovalbyID, setBookingtoApproval, getApprovedBooking, getUserOrder, AddPropertyInWishlist, getWhishlistPropertyById, DelectInWishlist } = require('../controllers/userController');
+const { getProfile, getDashboard, getAllApprovedProperty, getApprovedPropertybyID, setApprovalBooking, getBookingforApproval, getBookingforApprovalbyID, setBookingtoApproval, getApprovedBooking, getUserOrder, AddPropertyInWishlist, getWhishlistPropertyById, DelectInWishlist, SetUserInterest } = require('../controllers/userController');
 const authorize  = require('../middleware/authorize');
 
 
@@ -17,6 +17,6 @@ router.get('/getApprovedBooking',authorize(['admin', 'user',  'partner']) , getA
 router.get('/getUserOrder' ,authorize(['user']) ,  getUserOrder);
 router.post('/wishlist/add' ,authorize(['user']) ,  AddPropertyInWishlist);
 router.get('/wishlist/see',authorize(['user']) ,getWhishlistPropertyById);
-router.post('/wishlist/delete',authorize(['user']) , DelectInWishlist);
+router.post('/SetUserInterest',authorize(['user']) ,SetUserInterest);
 
 module.exports = router;
